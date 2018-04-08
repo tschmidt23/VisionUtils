@@ -1,0 +1,4 @@
+set(VisionUtils_FOUND 1)
+
+set ( VisionUtils_INCLUDE_DIR  "@VisionUtils_INCLUDE_DIR@" )
+set ( VisionUtils_INCLUDE_DIRS "@VisionUtils_INCLUDE_DIRS@" )
