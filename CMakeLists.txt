@@ -6,15 +6,18 @@ add_definitions(-DEIGEN_HAS_CUDA_FP16)
 
 find_package(Caffe)
 find_package(CUDA REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 file(GLOB VisionUtilsHeaders
      "${PROJECT_SOURCE_DIR}/Include/*.h")
 
 file(GLOB VisionUtilsSources
-     "${PROJECT_SOURCE_DIR}/Src/*.cpp")	
+     "${PROJECT_SOURCE_DIR}/Src/*.cpp"
+	 "${PROJECT_SOURCE_DIR}/Src/*/*.cpp")
 
 set(IncludeDirs
-    ${PROJECT_SOURCE_DIR}/Include)
+    ${PROJECT_SOURCE_DIR}/Include
+	${EIGEN3_INCLUDE_DIRS})
 
 if(${Caffe_FOUND})
 	set(IncludeDirs ${IncludeDirs} ${Caffe_INCLUDE_DIRS})
@@ -28,12 +31,19 @@ target_include_directories(VisionUtils PUBLIC ${IncludeDirs})
 
 
 # -=-=-=-=- Installation -=-=-=-=-
-set( VisionUtils_INCLUDE_DIR "{CMAKE_INSTALL_PREFIX}/include/" )
-set( VisionUtils_INCLUDE_DIRS {VisionUtils_INCLUDE_DIR} )
+set( VisionUtils_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/include/" )
+set( VisionUtils_INCLUDE_DIRS ${VisionUtils_INCLUDE_DIR} )
+set( VisionUtils_LIBRARY_DIR "${CMAKE_INSTALL_PREFIX}/lib/" )
+set( VisionUtils_LIBRARY_DIRS ${VisionUtils_LIBRARY_DIR} )
+set( VisionUtils_LIBRARY VisionUtils )
+set( VisionUtils_LIBRARIES ${VisionUtils_LIBRARY} )
 
 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/cmake/VisionUtilsConfig.cmake.in
 				${CMAKE_CURRENT_BINARY_DIR}/VisionUtilsConfig.cmake
 				@ONLY ESCAPE_QUOTES)
+
+install(TARGETS VisionUtils
+		DESTINATION lib)
 
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/Include/vu/
 		DESTINATION include/vu/

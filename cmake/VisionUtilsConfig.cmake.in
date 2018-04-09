@@ -2,3 +2,9 @@ set(VisionUtils_FOUND 1)
 
 set ( VisionUtils_INCLUDE_DIR  "@VisionUtils_INCLUDE_DIR@" )
 set ( VisionUtils_INCLUDE_DIRS "@VisionUtils_INCLUDE_DIRS@" )
+
+set ( VisionUtils_LIBRARY_DIR  "@VisionUtils_LIBRARY_DIR@" )
+set ( VisionUtils_LIBRARY_DIRS "@VisionUtils_LIBRARY_DIRS@" )
+
+set ( VisionUtils_LIBRARY  "@VisionUtils_LIBRARY@" )
+set ( VisionUtils_LIBRARIES  "@VisionUtils_LIBRARIES@" )

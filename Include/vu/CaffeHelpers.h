@@ -1,8 +1,29 @@
+#pragma once
+
+/***
+ * © Tanner Schmidt 2018
+ */
+
+
 #include <caffe/caffe.hpp>
 
 #include <string>
 
 namespace vu {
+
+template <template <typename> class LayerT, typename T>
+inline boost::shared_ptr<LayerT<T> > GetLayer(const caffe::Net<T> & net,
+                                              const std::string & layerName) {
+    boost::shared_ptr<caffe::Layer<T> > layer = net.layer_by_name(layerName);
+    if (layer) {
+        boost::shared_ptr<LayerT<T> > layer_ = boost::static_pointer_cast<LayerT<T> >(layer);
+        if (!layer_) {
+            throw std::runtime_error("layer '" + layerName + "' does not seem to be of the requested type");
+        }
+        return layer_;
+    }
+    return boost::shared_ptr<LayerT<T> >(nullptr);
+}
 
 template <template <typename> class LayerT, typename T>
 inline boost::shared_ptr <LayerT<T>> GetLayerOrDie(const caffe::Net <T> & net,
