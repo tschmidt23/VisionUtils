@@ -20,6 +20,10 @@ void CaffeSwizzle(const NDT::ConstVolume<unsigned char> & source,
 
 int GetLatestSnapshot(const std::string & experimentDir);
 
+template <typename T>
+void MakeDeconvolutionalWeightsBilinear(caffe::Net<T> & net,
+                                        const std::string layerName);
+
 template <template <typename> class LayerT, typename T>
 inline boost::shared_ptr<LayerT<T> > GetLayer(const caffe::Net<T> & net,
                                               const std::string & layerName) {
