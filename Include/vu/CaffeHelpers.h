@@ -7,9 +7,18 @@
 
 #include <caffe/caffe.hpp>
 
+#include <NDT/Tensor.h>
+
 #include <string>
 
 namespace vu {
+
+void InitCaffe(char * executableName);
+
+void CaffeSwizzle(const NDT::ConstVolume<unsigned char> & source,
+                  NDT::Volume<float> & destination);
+
+int GetLatestSnapshot(const std::string & experimentDir);
 
 template <template <typename> class LayerT, typename T>
 inline boost::shared_ptr<LayerT<T> > GetLayer(const caffe::Net<T> & net,

@@ -20,7 +20,11 @@ set(IncludeDirs
 	${EIGEN3_INCLUDE_DIRS})
 
 if(${Caffe_FOUND})
+
 	set(IncludeDirs ${IncludeDirs} ${Caffe_INCLUDE_DIRS})
+
+	add_definitions(-DHAS_CAFFE)
+
 endif()
 
 cuda_add_library(VisionUtils
