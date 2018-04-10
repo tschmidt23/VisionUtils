@@ -7,6 +7,7 @@ add_definitions(-DEIGEN_HAS_CUDA_FP16)
 find_package(Caffe)
 find_package(CUDA REQUIRED)
 find_package(Eigen3 REQUIRED)
+find_package(Pangolin)
 
 file(GLOB VisionUtilsHeaders
      "${PROJECT_SOURCE_DIR}/Include/*.h")
@@ -24,6 +25,16 @@ if(${Caffe_FOUND})
 	set(IncludeDirs ${IncludeDirs} ${Caffe_INCLUDE_DIRS})
 
 	add_definitions(-DHAS_CAFFE)
+
+endif()
+
+if(${Pangolin_FOUND})
+
+	set(IncludeDirs ${IncludeDirs} ${Pangolin_INCLUDE_DIRS})
+
+	set(Libraries ${Libraries} ${Pangolin_LIBRARIES})
+
+	add_definitions(-DHAS_PANGOLIN)
 
 endif()
 
