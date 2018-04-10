@@ -38,7 +38,7 @@ if(${Pangolin_FOUND})
 
 endif()
 
-cuda_add_library(VisionUtils
+cuda_add_library(VisionUtils SHARED
 	             ${VisionUtilsHeaders}
 	             ${VisionUtilsSources})
 
