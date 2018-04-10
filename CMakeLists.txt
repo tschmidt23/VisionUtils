@@ -24,6 +24,8 @@ if(${Caffe_FOUND})
 
 	set(IncludeDirs ${IncludeDirs} ${Caffe_INCLUDE_DIRS})
 
+	set(Libraries ${Libraries} ${Caffe_LIBRARIES})
+
 	add_definitions(-DHAS_CAFFE)
 
 endif()
@@ -43,7 +45,7 @@ cuda_add_library(VisionUtils SHARED
 	             ${VisionUtilsSources})
 
 target_include_directories(VisionUtils PUBLIC ${IncludeDirs})
-
+target_link_libraries(VisionUtils ${Libraries})
 
 # -=-=-=-=- Installation -=-=-=-=-
 set( VisionUtils_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/include/" )
