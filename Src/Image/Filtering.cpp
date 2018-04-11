@@ -4,12 +4,14 @@
 
 #include <vu/Image/Filtering.h>
 
+#include <vu/EigenHelpers.h>
+
 namespace vu {
 
 template <typename Scalar>
-NDT::ManagedVector<Scalar> && GenerateHalfGaussianKernel(const Scalar sigma, const int nSigmas) {
+void GenerateHalfGaussianKernel(NDT::ManagedVector<Scalar> & kernel, const Scalar sigma, const int nSigmas) {
 
-    NDT::ManagedVector<Scalar> kernel(1 + std::ceil(nSigmas * sigma));
+    kernel.Resize(1 + std::ceil(nSigmas * sigma));
 
     Scalar sum(0);
 
@@ -25,17 +27,17 @@ NDT::ManagedVector<Scalar> && GenerateHalfGaussianKernel(const Scalar sigma, con
 
     const Scalar oneOverSum = 1 / sum;
 
-    std::transform(kernel.Data(), kernel.Data() + kernel.Length(), [oneOverSum](const Scalar val) {
+    std::transform(kernel.Data(), kernel.Data() + kernel.Length(), kernel.Data(), [oneOverSum](const Scalar val) {
         return val * oneOverSum;
     });
 
-    return std::move(kernel);
-
 }
 
-template <typename Scalar>
+template void GenerateHalfGaussianKernel(NDT::ManagedVector<float> &, const float, const int);
+
+template <typename Scalar, typename KernelScalar>
 void RadiallySymmetricBlur(const NDT::Image<Scalar> & input,
-                           const NDT::Vector<Scalar> & halfKernel,
+                           const NDT::Vector<KernelScalar> & halfKernel,
                            NDT::Image<Scalar> & tmp,
                            NDT::Image<Scalar> & output) {
 
@@ -79,5 +81,12 @@ void RadiallySymmetricBlur(const NDT::Image<Scalar> & input,
 
 template void
 RadiallySymmetricBlur(const NDT::Image<float> &, const NDT::Vector<float> &, NDT::Image<float> &, NDT::Image<float> &);
+
+template void
+RadiallySymmetricBlur(const NDT::Image<Vec2<float> > &, const NDT::Vector<float> &, NDT::Image<Vec2<float> > &, NDT::Image<Vec2<float> > &);
+
+template void
+RadiallySymmetricBlur(const NDT::Image<Vec3<float> > &, const NDT::Vector<float> &, NDT::Image<Vec3<float> > &, NDT::Image<Vec3<float> > &);
+
 
 } // namespace vu

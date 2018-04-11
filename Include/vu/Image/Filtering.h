@@ -9,11 +9,11 @@
 namespace vu {
 
 template <typename Scalar>
-NDT::ManagedVector<Scalar> && GenerateHalfGaussianKernel(const Scalar sigma, const int nSigmas);
+void GenerateHalfGaussianKernel(NDT::ManagedVector<Scalar> & kernel, const Scalar sigma, const int nSigmas = 2);
 
-template <typename Scalar>
+template <typename Scalar, typename KernelScalar>
 void RadiallySymmetricBlur(const NDT::Image<Scalar> & input,
-                           const NDT::Vector<Scalar> & halfKernel,
+                           const NDT::Vector<KernelScalar> & halfKernel,
                            NDT::Image<Scalar> & tmp,
                            NDT::Image<Scalar> & output);
 
