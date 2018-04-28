@@ -4,6 +4,8 @@
 #include <random>
 #include <vector>
 
+#include <NDT/Tensor.h>
+
 namespace vu {
 
 static inline std::mt19937 & Generator() {
@@ -43,7 +45,7 @@ static inline T RemoveFromUniformlyAtRandom(std::vector<T> & vec) {
 
     typename std::vector<T>::iterator it = vec.begin();
 
-    std::advance(it,uniformIntSample(0,vec.size()-1));
+    std::advance(it, UniformIntSample(0,vec.size()-1));
 
     const T retVal = *it;
 
