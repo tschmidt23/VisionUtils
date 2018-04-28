@@ -19,7 +19,7 @@ Eigen::Matrix<Scalar, 3, 3> ComputeFundamentalMatrix(const NDT::Vector<Vec2<Scal
         const Scalar & y1 = targetPoints(i)(1);
 
         A(i, 0) = x0 * x1;
-        A(i, 1) = y0 * x1;
+        A(i, 1) = x1 * y0;
         A(i, 2) = x1;
         A(i, 3) = x0 * y1;
         A(i, 4) = y0 * y1;
@@ -37,14 +37,24 @@ Eigen::Matrix<Scalar, 3, 3> ComputeFundamentalMatrix(const NDT::Vector<Vec2<Scal
     // TODO: might need to be col
     auto solution = svd.matrixV().col(8);
 
+    std::cout << "solution: " << std::endl << solution.transpose() << std::endl << std::endl;
+
     // TODO: check if ordinality is correct
-    Eigen::Map<const Eigen::Matrix<Scalar, 3, 3>> reshapedF(solution.data());
+    Eigen::Map<const Eigen::Matrix<Scalar, 3, 3, Eigen::RowMajor> > reshapedF(solution.data());
 
     Eigen::Matrix<Scalar, 3, 3> F = reshapedF;
+
+    std::cout << "F: " << std::endl << F << std::endl << std::endl;
 
     Eigen::JacobiSVD<decltype(F)> svd2(F, Eigen::ComputeFullU | Eigen::ComputeFullV);
 
     Eigen::Matrix<Scalar, 3, 1> sigma = svd2.singularValues();
+
+    std::cout << "sigma: " << std::endl << sigma.transpose() << std::endl << std::endl;
+
+    std::cout << "F: " <<  std::endl << F << std::endl << std::endl;
+
+    std::cout << "or: " << std::endl << (svd2.matrixU() * Eigen::DiagonalMatrix<Scalar, 3, 3>(sigma) * svd2.matrixV().transpose()) << std::endl << std::endl;
 
     sigma(2) = 0;
 
