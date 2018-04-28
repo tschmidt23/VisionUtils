@@ -16,17 +16,17 @@
 #endif // __CUDACC__
 
 // -=-=-=- types -=-=-=-
-template <typename Scalar, int D>
+template <int D, typename Scalar>
 using Vec = Eigen::Matrix<Scalar,D,1,Eigen::DontAlign>;
 
 template <typename Scalar>
-using Vec2 = Eigen::Matrix<Scalar,2,1,Eigen::DontAlign>;
+using Vec2 = Vec<2,Scalar>;
 
 template <typename Scalar>
-using Vec3 = Eigen::Matrix<Scalar,3,1,Eigen::DontAlign>;
+using Vec3 = Vec<3,Scalar>;
 
 template <typename Scalar>
-using Vec4 = Eigen::Matrix<Scalar,4,1,Eigen::DontAlign>;
+using Vec4 = Vec<4,Scalar>;
 
 namespace vu {
 

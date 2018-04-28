@@ -12,6 +12,17 @@ namespace vu {
 template <typename Derived>
 struct DrawingTraits;
 
+void ActivateImageCoordinates(pangolin::View & view, const Vec2<int> & imageDims) {
+
+    view.ActivatePixelOrthographic();
+
+    glScalef( view.GetBounds().w / static_cast<double>(imageDims(0)),
+              -view.GetBounds().h / static_cast<double>(imageDims(1)),
+              1);
+    glTranslatef(0, -1.f * static_cast<int>(imageDims(1)), 0);
+
+}
+
 void DrawPoints(const NDT::Image<Vec3<float> > & points, const GLuint mode) {
 
     glEnableClientState(GL_VERTEX_ARRAY);
@@ -52,7 +63,7 @@ void DrawPoints(const NDT::Image<Vec3<float> > & points,
 }
 
 template <int D>
-void DrawPoints(const NDT::Image<Eigen::Matrix<float, D, 1, Eigen::DontAlign> > & points,
+void DrawPoints(const NDT::Image<Vec<D, float> > & points,
                 const NDT::Image<Vec3<unsigned char> > & colors) {
 
     assert(points.Count() == colors.Count());
@@ -80,13 +91,14 @@ void DrawPoints(const NDT::Vector<Vec3<float> > & points, const GLuint mode) {
 
 }
 
-void DrawPoints(const NDT::Vector<Vec3<float> > & points,
+template <int D>
+void DrawPoints(const NDT::Vector<Vec<D, float> > & points,
                 const NDT::Vector<Vec3<unsigned char> > & colors) {
 
     assert(points.Length() == colors.Length());
 
     glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(3, GL_FLOAT, 0, points.Data());
+    glVertexPointer(D, GL_FLOAT, 0, points.Data());
     glEnableClientState(GL_COLOR_ARRAY);
     glColorPointer(3, GL_UNSIGNED_BYTE, 0, colors.Data());
     glDrawArrays(GL_POINTS, 0, points.Count());
@@ -94,6 +106,10 @@ void DrawPoints(const NDT::Vector<Vec3<float> > & points,
     glDisableClientState(GL_VERTEX_ARRAY);
 
 }
+
+template void DrawPoints(const NDT::Vector<Vec2<float> > &, const NDT::Vector<Vec3<unsigned char> > &);
+
+template void DrawPoints(const NDT::Vector<Vec3<float> > &, const NDT::Vector<Vec3<unsigned char> > &);
 
 void DrawPoints(const NDT::Vector<Vec3<float> > & points,
                 const NDT::Vector<Vec3<float> > & normals,
