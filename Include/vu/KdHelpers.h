@@ -1,7 +1,10 @@
 #pragma once
 
 #include <nanoflann.hpp>
+
 #include <NDT/Tensor.h>
+
+#include <vu/EigenHelpers.h>
 
 namespace vu {
 
@@ -142,8 +145,11 @@ private:
 
 using KdVertMapTree = nanoflann::KDTreeSingleIndexAdaptor<nanoflann::L2_Simple_Adaptor<float, KdVertMap>, KdVertMap, 3, int>;
 
+template <typename Scalar, int C, int X, int Y>
+struct KdFeatureMap;
+
 template <typename Scalar>
-struct KdFeatureMap {
+struct KdFeatureMap<Scalar, 2, 0, 1> {
 public:
 
     KdFeatureMap(const NDT::ConstVolume<Scalar> & featureMap)
@@ -191,6 +197,55 @@ private:
 };
 
 template <typename Scalar>
-using KdFeatureMapTree = nanoflann::KDTreeSingleIndexAdaptor<nanoflann::L2_Simple_Adaptor<Scalar, KdFeatureMap<Scalar> >, KdFeatureMap<Scalar>, -1, int>;
+struct KdFeatureMap<Scalar, 0, 1, 2> {
+public:
+
+    KdFeatureMap(const NDT::ConstVolume<Scalar> & featureMap)
+            : linearizedFeatureMap_(featureMap.DimensionSize(2),
+                                    featureMap.DimensionSize(0) * featureMap.DimensionSize(1),
+                                    featureMap.Data()) { }
+
+    inline size_t kdtree_get_point_count() const {
+        return linearizedFeatureMap_.DimensionSize(0);
+    }
+
+    inline Scalar kdtree_distance(const Scalar * p1, const size_t idx_p2, size_t /*size*/) const {
+
+        Scalar distanceSquared(0);
+
+        for (int c = 0; c < linearizedFeatureMap_.DimensionSize(0); ++c) {
+
+            const Scalar diff = linearizedFeatureMap_(c, idx_p2) - p1[c];
+
+            distanceSquared += diff * diff;
+
+        }
+
+        return distanceSquared;
+
+    }
+
+    inline Scalar kdtree_get_pt(const size_t idx, int dim) const {
+
+        return linearizedFeatureMap_(dim, idx);
+
+    }
+
+    template <class BBOX>
+    bool kdtree_get_bbox(BBOX & /*bb*/) const {
+        return false;
+    }
+
+private:
+
+    // The linearized feature map flattens the first two dimensions so that they can be indexed
+    // linearly w/o specifying both x and y. This should speed up search a bit. The first dimension
+    // should be of length W * H and the second is the number of feature channels.
+    NDT::ConstHostTensor2<Scalar> linearizedFeatureMap_;
+
+};
+
+template <typename Scalar, int C = 0, int X = 1, int Y = 2>
+using KdFeatureMapTree = nanoflann::KDTreeSingleIndexAdaptor<nanoflann::L2_Simple_Adaptor<Scalar, KdFeatureMap<Scalar, C, X, Y> >, KdFeatureMap<Scalar, C, X, Y>, -1, int>;
 
 } // namespace vu

@@ -46,7 +46,7 @@ void ActivateImageCoordinates(pangolin::View & view, const Vec2<int> & imageDims
 template <typename T, NDT::Residency R>
 void ActivateImageCoordinates(pangolin::View & view, const NDT::Tensor<2,T,R> & image) {
 
-    ActivateImageCoordinates(view, image.Dimensions());
+    ActivateImageCoordinates(view, image.Dimensions().template cast<int>());
 
 }
 
