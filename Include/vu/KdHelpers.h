@@ -201,27 +201,32 @@ struct KdFeatureMap<Scalar, 0, 1, 2> {
 public:
 
     KdFeatureMap(const NDT::ConstVolume<Scalar> & featureMap)
-            : linearizedFeatureMap_(featureMap.DimensionSize(2),
-                                    featureMap.DimensionSize(0) * featureMap.DimensionSize(1),
+            : linearizedFeatureMap_(featureMap.DimensionSize(0),
+                                    featureMap.DimensionSize(1) * featureMap.DimensionSize(2),
                                     featureMap.Data()) { }
 
     inline size_t kdtree_get_point_count() const {
-        return linearizedFeatureMap_.DimensionSize(0);
+        return linearizedFeatureMap_.DimensionSize(1);
     }
 
     inline Scalar kdtree_distance(const Scalar * p1, const size_t idx_p2, size_t /*size*/) const {
 
-        Scalar distanceSquared(0);
+        Eigen::Map<const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> > p2(&linearizedFeatureMap_(0, idx_p2), linearizedFeatureMap_.DimensionSize(1));
 
-        for (int c = 0; c < linearizedFeatureMap_.DimensionSize(0); ++c) {
+        return (Eigen::Map<Eigen::Matrix<Scalar, Eigen::Dynamic, 1> >(p1, linearizedFeatureMap_.DimensionSize(1)) - p2).squaredNorm();
 
-            const Scalar diff = linearizedFeatureMap_(c, idx_p2) - p1[c];
 
-            distanceSquared += diff * diff;
-
-        }
-
-        return distanceSquared;
+//        Scalar distanceSquared(0);
+//
+//        for (int c = 0; c < linearizedFeatureMap_.DimensionSize(0); ++c) {
+//
+//            const Scalar diff = linearizedFeatureMap_(c, idx_p2) - p1[c];
+//
+//            distanceSquared += diff * diff;
+//
+//        }
+//
+//        return distanceSquared;
 
     }
 
