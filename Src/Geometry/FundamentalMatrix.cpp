@@ -1,4 +1,5 @@
 #include <vu/Geometry/FundamentalMatrix.h>
+#include <vu/Geometry/Triangulation.h>
 
 namespace vu {
 
@@ -67,5 +68,95 @@ template Eigen::Matrix3f ComputeFundamentalMatrix(const NDT::Vector<Vec2<float> 
 
 template Eigen::Matrix3d ComputeFundamentalMatrix(const NDT::Vector<Vec2<double> > &,
                                                   const NDT::Vector<Vec2<double> > &);
+
+
+template <typename Scalar>
+inline bool CheckTransform(const Sophus::SE3<Scalar> & transform,
+                           const NDT::Vector<Vec2<Scalar> > & raysSource,
+                           const NDT::Vector<Vec2<Scalar> > & raysDestination) {
+
+    for (int i = 0; i < raysSource.Length(); ++i) {
+
+        const Eigen::Matrix<Scalar, 3, 1> p = LinearLeastSquaresTriangulation(Sophus::SE3<Scalar>(), raysSource(i), transform, raysDestination(i));
+
+        if (p(2) < 0 || (transform * p)(2) < 0) {
+            return false;
+        }
+
+    }
+
+    return true;
+
+}
+
+template <typename Scalar>
+Sophus::SE3<Scalar> RelativePoseFromFundamentalMatrix(const Eigen::Matrix<Scalar, 3, 3> & F,
+                                                      const Eigen::Matrix<Scalar, 3, 3> & K,
+                                                      const NDT::Vector<Vec2<Scalar> > & raysSource,
+                                                      const NDT::Vector<Vec2<Scalar> > & raysDestination) {
+
+    Sophus::SE3<Scalar> relativePose;
+
+    const Eigen::Matrix<Scalar, 3, 3> E = K.transpose() * F * K;
+
+    Eigen::JacobiSVD<Eigen::Matrix<Scalar, 3, 3> > svdE(E, Eigen::ComputeFullU | Eigen::ComputeFullV);
+
+    const Eigen::Matrix<Scalar, 3, 1> t = svdE.matrixU().col(2).normalized();
+
+    // TODO: this could be more efficient
+    const Eigen::Matrix<Scalar, 3, 3> W = (Eigen::Matrix<Scalar, 3, 3>() << 0, -1, 0,  1, 0, 0,  0, 0, 1).finished();
+
+    Eigen::Matrix<Scalar, 3, 3> R1 = svdE.matrixU() * W * svdE.matrixV().transpose();
+
+    if (R1.determinant() < 0) {
+        R1 *= -1;
+    }
+
+
+    relativePose = Sophus::SE3<Scalar>(Sophus::SO3<Scalar>(R1), t);
+
+    if (CheckTransform(relativePose, raysSource, raysDestination)) {
+        return relativePose;
+    }
+
+    relativePose.translation() *= -1;
+
+    if (CheckTransform(relativePose, raysSource, raysDestination)) {
+        return relativePose;
+    }
+
+    Eigen::Matrix<Scalar, 3, 3> R2 = svdE.matrixU() * W.transpose() * svdE.matrixV().transpose();
+
+    if (R2.determinant() < 0) {
+        R2 *= -1;
+    }
+
+    relativePose.so3() = Sophus::SO3<Scalar>(R2);
+
+    if (CheckTransform(relativePose, raysSource, raysDestination)) {
+        return relativePose;
+    }
+
+    relativePose.translation() *= -1;
+
+    if (CheckTransform(relativePose, raysSource, raysDestination)) {
+        return relativePose;
+    }
+
+    throw std::runtime_error("none of the transforms checked out");
+
+}
+
+template
+Sophus::SE3f RelativePoseFromFundamentalMatrix(const Eigen::Matrix3f & F,
+                                               const Eigen::Matrix3f & K,
+                                               const NDT::Vector<Vec2<float> > & raysSource,
+                                               const NDT::Vector<Vec2<float> > & raysDestination);
+
+template
+Sophus::SE3d RelativePoseFromFundamentalMatrix(const Eigen::Matrix3d & F,
+                                               const Eigen::Matrix3d & K,
+                                               const NDT::Vector<Vec2<double> > & raysSource,
+                                               const NDT::Vector<Vec2<double> > & raysDestination);
 
 } // namespace vu
