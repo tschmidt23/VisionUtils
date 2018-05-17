@@ -1,5 +1,9 @@
 #pragma once
 
+/***
+ * © Tanner Schmidt 2018
+ */
+
 #include <nanoflann.hpp>
 
 #include <NDT/Tensor.h>

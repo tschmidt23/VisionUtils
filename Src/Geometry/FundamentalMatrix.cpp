@@ -1,3 +1,7 @@
+/***
+ * © Tanner Schmidt 2018
+ */
+ 
 #include <vu/Geometry/FundamentalMatrix.h>
 #include <vu/Geometry/Triangulation.h>
 

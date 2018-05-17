@@ -1,5 +1,9 @@
 #pragma once
 
+/***
+ * © Tanner Schmidt 2018
+ */
+
 #include <Eigen/SVD>
 
 #include <sophus/se3.hpp>
