@@ -6,10 +6,18 @@
 
 namespace vu {
 
-template <int D, typename Scalar>
-inline Vec<D+1,Scalar> Homogenize(const Vec<D,Scalar> & v) {
+template <typename Derived>
+using HomogenizedType = Eigen::Matrix<typename Eigen::internal::traits<Derived>::Scalar,
+        Eigen::internal::traits<Derived>::RowsAtCompileTime + 1,
+        1,
+        Eigen::internal::traits<Derived>::Options>;
 
-    return (Vec<D+1,Scalar>() << v, Scalar(1)).finished();
+template <typename Derived>
+inline typename std::enable_if<Eigen::internal::traits<Derived>::RowsAtCompileTime == 2 &&
+                               Eigen::internal::traits<Derived>::ColsAtCompileTime == 1, HomogenizedType<Derived> >::type
+Homogenize(const Eigen::MatrixBase<Derived> & v) {
+
+    return (HomogenizedType<Derived>() << v, typename Eigen::internal::traits<Derived>::Scalar(1)).finished();
 
 }
 
@@ -19,7 +27,6 @@ inline Vec<D-1,Scalar> Dehomogenize(const Vec<D,Scalar> & v) {
     return v.template head<D-1>() / v(D-1);
 
 };
-
 
 template <int D, typename Scalar>
 Vec<D,Scalar> Mean(const NDT::Vector<Vec<D,Scalar> > & points) {

@@ -41,6 +41,12 @@ struct StripOptions<Eigen::Matrix<Scalar, M, N, Options> > {
     using Type = Eigen::Matrix<Scalar, M, N>;
 };
 
+template <typename Derived>
+using InstantiatedType = Eigen::Matrix<typename Eigen::internal::traits<Derived>::Scalar,
+                                       Eigen::internal::traits<Derived>::RowsAtCompileTime,
+                                       Eigen::internal::traits<Derived>::ColsAtCompileTime,
+                                       Eigen::internal::traits<Derived>::Options>;
+
 // -=-=-=- round -=-=-=-
 template <typename Derived>
 CUDA_HD_PREFIX
