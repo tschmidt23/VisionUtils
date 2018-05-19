@@ -10,6 +10,8 @@
 
 #include <GL/glew.h>
 
+#include <Eigen/Geometry>
+
 #include <vu/EigenHelpers.h>
 
 namespace vu {
@@ -49,6 +51,8 @@ void ActivateImageCoordinates(pangolin::View & view, const NDT::Tensor<2,T,R> & 
     ActivateImageCoordinates(view, image.Dimensions().template cast<int>());
 
 }
+
+void ActivateViewportCoordinates(pangolin::View & view, const Eigen::AlignedBox2f & viewport);
 
 float OscillatingValue(const float d0, const float amplitude, const float frequency = 1.f);
 

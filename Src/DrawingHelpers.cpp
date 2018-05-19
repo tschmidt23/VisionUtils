@@ -23,6 +23,18 @@ void ActivateImageCoordinates(pangolin::View & view, const Vec2<int> & imageDims
 
 }
 
+void ActivateViewportCoordinates(pangolin::View & view, const Eigen::AlignedBox2f & viewport) {
+
+    view.ActivatePixelOrthographic();
+
+    glScalef( view.GetBounds().w / viewport.sizes()(0),
+              -view.GetBounds().h / viewport.sizes()(1),
+              1);
+    glTranslatef(-viewport.min()(0), -viewport.min()(1) - viewport.sizes()(1), 0);
+
+}
+
+
 void DrawPoints(const NDT::Image<Vec3<float> > & points, const GLuint mode) {
 
     glEnableClientState(GL_VERTEX_ARRAY);

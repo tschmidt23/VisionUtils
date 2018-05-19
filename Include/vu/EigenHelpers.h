@@ -31,6 +31,17 @@ using Vec4 = Vec<4,Scalar>;
 namespace vu {
 
 // -=-=-=- round -=-=-=-
+template <typename T>
+struct StripOptions {
+    using Type = T;
+};
+
+template <typename Scalar, int M, int N, int Options>
+struct StripOptions<Eigen::Matrix<Scalar, M, N, Options> > {
+    using Type = Eigen::Matrix<Scalar, M, N>;
+};
+
+// -=-=-=- round -=-=-=-
 template <typename Derived>
 CUDA_HD_PREFIX
 inline Eigen::Matrix<int,Eigen::internal::traits<Derived>::RowsAtCompileTime,Eigen::internal::traits<Derived>::ColsAtCompileTime,Eigen::internal::traits<Derived>::Options>
