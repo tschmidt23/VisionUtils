@@ -30,6 +30,20 @@ using Vec4 = Vec<4,Scalar>;
 
 namespace vu {
 
+
+// -=-=-=- stream ops -=-=-=-
+template <typename Derived>
+typename std::enable_if<0 < Eigen::internal::traits<Derived>::RowsAtCompileTime &&
+                        0 < Eigen::internal::traits<Derived>::ColsAtCompileTime, std::istream &>::type
+operator>>(std::istream & stream, Eigen::MatrixBase<Derived> & m) {
+    for (int r = 0; r < Eigen::internal::traits<Derived>::RowsAtCompileTime; ++r) {
+        for (int c = 0; c < Eigen::internal::traits<Derived>::ColsAtCompileTime; ++c) {
+            stream >> m(r, c);
+        }
+    }
+}
+
+
 // -=-=-=- round -=-=-=-
 template <typename T>
 struct StripOptions {
