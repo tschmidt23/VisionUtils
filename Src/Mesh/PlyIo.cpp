@@ -181,10 +181,10 @@ void WritePly(const NDT::Vector<Vec3<float> > & vertices,
 }
 
 void ParsePlyHeader(std::ifstream & stream,
-                    std::vector<std::string> elementTypeStrings,
-                    std::vector<int> elementCounts,
-                    std::vector<std::vector<std::string> > elementPropertyTypeStrings,
-                    std::vector<std::vector<std::string> > elementPropertyNames) {
+                    std::vector<std::string> & elementTypeStrings,
+                    std::vector<int> & elementCounts,
+                    std::vector<std::vector<std::string> > & elementPropertyTypeStrings,
+                    std::vector<std::vector<std::string> > & elementPropertyNames) {
 
     std::regex firstLineRegex("ply\\s*");
     std::regex secondLineRegex("format\\s+ascii\\s+1\\.0\\s*");
@@ -237,7 +237,7 @@ void ParsePlyHeader(std::ifstream & stream,
 
             std::getline(stream, s);
 
-            std::regex propertyRegex("(.*)\\s+([^\\s]+)\\s*");
+            std::regex propertyRegex("\\s+(.*)\\s+([^\\s]+)\\s*");
 
             std::smatch match;
 
@@ -372,6 +372,8 @@ void ReadPly(NDT::ManagedVector<Vec3<float> > * vertices,
         const std::vector<std::string> & propertyNames = elementPropertyNames[i];
 
         const std::string & s = elementTypeStrings[i];
+
+        std::cout << "element type " << i << ": " << s << std::endl;
 
         if (s == "vertex") {
 
@@ -543,123 +545,133 @@ void ReadPly(NDT::ManagedVector<Vec3<float> > * vertices,
 }
 
 void ReadPly(NDT::ManagedVector<Vec3<float> > & vertices,
+             NDT::ManagedVector<Vec3<int> > & faces,
+             const std::string filename) {
+
+    ReadPly(&vertices, nullptr, nullptr, &faces, filename);
+
+}
+
+void ReadPly(NDT::ManagedVector<Vec3<float> > & vertices,
              NDT::ManagedVector<Vec3<float> > & normals,
              NDT::ManagedVector<Vec3<unsigned char> > & colors,
              NDT::ManagedVector<Vec3<int> > & faces,
              const std::string filename) {
 
-    std::ifstream stream(filename);
-    std::string word;
+    ReadPly(&vertices, &normals, &colors, &faces, filename);
 
-    auto getExpectedWord = [&stream, &word, &filename](const std::string expected) {
-
-        stream >> word;
-        if (word != expected) {
-            throw std::runtime_error("while reading " + filename + ":\n did not find expected word " + expected +
-                                     "\n instead, we get " + word);
-        }
-
-    };
-
-    getExpectedWord("ply");
-    getExpectedWord("format");
-    getExpectedWord("ascii");
-
-    double version;
-    stream >> version;
-
-    if (version != 1.0) {
-        throw std::runtime_error("expected version 1");
-    }
-
-    getExpectedWord("element");
-    getExpectedWord("vertex");
-
-    int vertexCount;
-    stream >> vertexCount;
-
-    vertices.Resize(vertexCount);
-    normals.Resize(vertexCount);
-    colors.Resize(vertexCount);
-
-    getExpectedWord("property");
-    getExpectedWord("float");
-    getExpectedWord("x");
-
-    getExpectedWord("property");
-    getExpectedWord("float");
-    getExpectedWord("y");
-
-    getExpectedWord("property");
-    getExpectedWord("float");
-    getExpectedWord("z");
-
-    getExpectedWord("property");
-    getExpectedWord("float");
-    getExpectedWord("nx");
-
-    getExpectedWord("property");
-    getExpectedWord("float");
-    getExpectedWord("ny");
-
-    getExpectedWord("property");
-    getExpectedWord("float");
-    getExpectedWord("nz");
-
-    getExpectedWord("property");
-    getExpectedWord("uchar");
-    getExpectedWord("red");
-
-    getExpectedWord("property");
-    getExpectedWord("uchar");
-    getExpectedWord("green");
-
-    getExpectedWord("property");
-    getExpectedWord("uchar");
-    getExpectedWord("blue");
-
-    getExpectedWord("element");
-    getExpectedWord("face");
-
-    int faceCount;
-    stream >> faceCount;
-
-    faces.Resize(faceCount);
-
-    getExpectedWord("property");
-    getExpectedWord("list");
-    getExpectedWord("uchar");
-    getExpectedWord("int");
-    getExpectedWord("vertex_index");
-
-    getExpectedWord("end_header");
-
-    for (int i = 0; i < vertexCount; ++i) {
-        stream >> vertices(i)(0);
-        stream >> vertices(i)(1);
-        stream >> vertices(i)(2);
-        stream >> normals(i)(0);
-        stream >> normals(i)(1);
-        stream >> normals(i)(2);
-        int v;
-        stream >> v; colors(i)(0) = v;
-        stream >> v; colors(i)(1) = v;
-        stream >> v; colors(i)(2) = v;
-        normals(i) *= -1;
-    }
-
-    for ( int i = 0; i < faceCount; ++i) {
-        int nIndices;
-        stream >> nIndices;
-        if (nIndices != 3) {
-            throw std::runtime_error("expecting triangle mesh");
-        }
-
-        stream >> faces(i)(0);
-        stream >> faces(i)(2);
-        stream >> faces(i)(1);
-
-    }
+//    std::ifstream stream(filename);
+//    std::string word;
+//
+//    auto getExpectedWord = [&stream, &word, &filename](const std::string expected) {
+//
+//        stream >> word;
+//        if (word != expected) {
+//            throw std::runtime_error("while reading " + filename + ":\n did not find expected word " + expected +
+//                                     "\n instead, we get " + word);
+//        }
+//
+//    };
+//
+//    getExpectedWord("ply");
+//    getExpectedWord("format");
+//    getExpectedWord("ascii");
+//
+//    double version;
+//    stream >> version;
+//
+//    if (version != 1.0) {
+//        throw std::runtime_error("expected version 1");
+//    }
+//
+//    getExpectedWord("element");
+//    getExpectedWord("vertex");
+//
+//    int vertexCount;
+//    stream >> vertexCount;
+//
+//    vertices.Resize(vertexCount);
+//    normals.Resize(vertexCount);
+//    colors.Resize(vertexCount);
+//
+//    getExpectedWord("property");
+//    getExpectedWord("float");
+//    getExpectedWord("x");
+//
+//    getExpectedWord("property");
+//    getExpectedWord("float");
+//    getExpectedWord("y");
+//
+//    getExpectedWord("property");
+//    getExpectedWord("float");
+//    getExpectedWord("z");
+//
+//    getExpectedWord("property");
+//    getExpectedWord("float");
+//    getExpectedWord("nx");
+//
+//    getExpectedWord("property");
+//    getExpectedWord("float");
+//    getExpectedWord("ny");
+//
+//    getExpectedWord("property");
+//    getExpectedWord("float");
+//    getExpectedWord("nz");
+//
+//    getExpectedWord("property");
+//    getExpectedWord("uchar");
+//    getExpectedWord("red");
+//
+//    getExpectedWord("property");
+//    getExpectedWord("uchar");
+//    getExpectedWord("green");
+//
+//    getExpectedWord("property");
+//    getExpectedWord("uchar");
+//    getExpectedWord("blue");
+//
+//    getExpectedWord("element");
+//    getExpectedWord("face");
+//
+//    int faceCount;
+//    stream >> faceCount;
+//
+//    faces.Resize(faceCount);
+//
+//    getExpectedWord("property");
+//    getExpectedWord("list");
+//    getExpectedWord("uchar");
+//    getExpectedWord("int");
+//    getExpectedWord("vertex_index");
+//
+//    getExpectedWord("end_header");
+//
+//    for (int i = 0; i < vertexCount; ++i) {
+//        stream >> vertices(i)(0);
+//        stream >> vertices(i)(1);
+//        stream >> vertices(i)(2);
+//        stream >> normals(i)(0);
+//        stream >> normals(i)(1);
+//        stream >> normals(i)(2);
+//        int v;
+//        stream >> v; colors(i)(0) = v;
+//        stream >> v; colors(i)(1) = v;
+//        stream >> v; colors(i)(2) = v;
+//        normals(i) *= -1;
+//    }
+//
+//    for ( int i = 0; i < faceCount; ++i) {
+//        int nIndices;
+//        stream >> nIndices;
+//        if (nIndices != 3) {
+//            throw std::runtime_error("expecting triangle mesh");
+//        }
+//
+//        stream >> faces(i)(0);
+//        stream >> faces(i)(2);
+//        stream >> faces(i)(1);
+//
+//    }
 
 }
 
