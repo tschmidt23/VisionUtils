@@ -75,7 +75,7 @@ void MakeDeconvolutionalWeightsBilinear(caffe::Net<T> & net,
     std::cout << channelsIn << " channels in, " << channelsOut << " channels out" << std::endl;
 
     if (channelsIn != channelsOut) {
-        throw std::runtime_error("channels in does not match channels out");
+        throw std::runtime_error("channels in does not match channels out for layer " + layerName);
     }
 
     // wipe previous weights and biases
