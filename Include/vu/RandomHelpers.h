@@ -14,12 +14,29 @@ static inline std::mt19937 & Generator() {
     return gen;
 }
 
-static inline int UniformIntSample(const int a, const int b) {
+//static inline int UniformIntSample(const int a, const int b) {
+//
+//    std::uniform_int_distribution<> distribution(a,b);
+//
+//    return distribution(Generator());
+//
+//}
 
-    std::uniform_int_distribution<> distribution(a,b);
-
+template <typename Scalar>
+static inline
+typename std::enable_if<std::is_integral<Scalar>::value, Scalar>::type
+UniformSample(const Scalar min, const Scalar max) {
+    std::uniform_int_distribution<Scalar> distribution(min, max);
     return distribution(Generator());
+}
 
+template <typename Scalar>
+static inline
+typename std::enable_if<std::is_floating_point<Scalar>::value, Scalar>::type
+UniformSample(const Scalar min = Scalar(0), const Scalar max = Scalar(1)) {
+    std::uniform_real_distribution<Scalar> distribution(min, max);
+    return distribution(Generator());
+//    return min + UniformUnitSample()*(max-min);
 }
 
 template <typename T>
@@ -81,22 +98,20 @@ static inline std::pair<T1,T2> RemoveFromUniformlyAtRandom(const std::map<T1,T2>
 
 }
 
-static inline float UniformUnitSample() {
+//static inline float UniformUnitSample() {
+//
+//    return rand() / (float) RAND_MAX;
+//
+//}
 
-    return rand() / (float) RAND_MAX;
 
-}
 
-static inline float UniformSample(const float min, const float max) {
-    return min + UniformUnitSample()*(max-min);
-}
+template <typename Scalar>
+static inline uint SelectIndexFromCumulativeDistribution(const std::vector<Scalar> & cdf) {
 
-template <typename T>
-static inline uint SelectIndexFromCumulativeDistribution(const std::vector<T> & cdf) {
+    Scalar r = UniformSample<Scalar>();
 
-    double r = UniformUnitSample();
-
-    return std::lower_bound(cdf.begin(),cdf.end(),r) - cdf.begin();
+    return std::lower_bound(cdf.begin(), cdf.end(), r) - cdf.begin();
 
 }
 

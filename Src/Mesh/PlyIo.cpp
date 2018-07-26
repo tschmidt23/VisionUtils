@@ -545,6 +545,13 @@ void ReadPly(NDT::ManagedVector<Vec3<float> > * vertices,
 }
 
 void ReadPly(NDT::ManagedVector<Vec3<float> > & vertices,
+             const std::string filename) {
+
+    ReadPly(&vertices, nullptr, nullptr, nullptr, filename);
+
+}
+
+void ReadPly(NDT::ManagedVector<Vec3<float> > & vertices,
              NDT::ManagedVector<Vec3<int> > & faces,
              const std::string filename) {
 

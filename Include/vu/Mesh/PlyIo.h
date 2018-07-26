@@ -41,6 +41,9 @@ void WritePly(const NDT::Vector<Vec3<float> > & vertices,
               const std::string filename);
 
 void ReadPly(NDT::ManagedVector<Vec3<float> > & vertices,
+             const std::string filename);
+
+void ReadPly(NDT::ManagedVector<Vec3<float> > & vertices,
              NDT::ManagedVector<Vec3<int> > & faces,
              const std::string filename);
 

@@ -1,5 +1,7 @@
 #include <vu/Mesh/Sampling.h>
 
+#include <vu/RandomHelpers.h>
+
 namespace vu {
 
 MeshSampler::MeshSampler(const NDT::ConstVector<Vec3<float> > & vertices,
@@ -8,9 +10,52 @@ MeshSampler::MeshSampler(const NDT::ConstVector<Vec3<float> > & vertices,
 
     for (int n = 0; n < faces.Count(); ++n) {
 
+        const Vec3<float> & vA = vertices(faces(n)(0));
+        const Vec3<float> & vB = vertices(faces(n)(1));
+        const Vec3<float> & vC = vertices(faces(n)(2));
 
+        const double lAB = (vA - vB).norm();
+        const double lBC = (vB - vC).norm();
+        const double lCA = (vC - vA).norm();
+
+        const double s = (lAB + lBC + lCA) / 2.0;
+
+        const double surfaceArea = std::sqrt( s * (s - lAB) * (s - lBC)*(s - lCA));
+
+        if (n == 0) {
+            cumulativeSurfaceArea_[n] = surfaceArea;
+        } else {
+            // TODO: numerical stability issues here potentially, maybe do a tree reduction in the future
+            cumulativeSurfaceArea_[n] = cumulativeSurfaceArea_[n - 1] + surfaceArea;
+        }
 
     }
+
+    totalSurfaceArea_ = cumulativeSurfaceArea_.back();
+
+    const double oneOverTotalSurfaceArea = 1.0 / totalSurfaceArea_;
+
+    for (double & val : cumulativeSurfaceArea_) {
+        val *= oneOverTotalSurfaceArea;
+    }
+
+}
+
+Vec3<float> MeshSampler::SamplePoint() const {
+
+    // pick a face
+    const Vec3<int> & face = faces_(SelectIndexFromCumulativeDistribution(cumulativeSurfaceArea_));
+
+    // pick a vertex
+    const double r1 = UniformSample<double>();
+
+    const double r2 = UniformSample<double>();
+
+    const double sqrtR1 = std::sqrt(r1);
+
+    return (1 - sqrtR1) * vertices_(face(0)) +
+           sqrtR1 * (1 - r2) * vertices_(face(1)) +
+           sqrtR1 * r2 * vertices_(face(2));
 
 }
 
