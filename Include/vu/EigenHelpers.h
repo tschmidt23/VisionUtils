@@ -34,11 +34,30 @@ namespace vu {
 // -=-=-=- stream ops -=-=-=-
 template <typename Derived>
 typename std::enable_if<0 < Eigen::internal::traits<Derived>::RowsAtCompileTime &&
-                        0 < Eigen::internal::traits<Derived>::ColsAtCompileTime, std::istream &>::type
+                        0 < Eigen::internal::traits<Derived>::ColsAtCompileTime &&
+                        !std::is_same<unsigned char,typename Eigen::internal::traits<Derived>::Scalar>::value &&
+                        !std::is_same<char,typename Eigen::internal::traits<Derived>::Scalar>::value, std::istream &>::type
 operator>>(std::istream & stream, Eigen::MatrixBase<Derived> & m) {
     for (int r = 0; r < Eigen::internal::traits<Derived>::RowsAtCompileTime; ++r) {
         for (int c = 0; c < Eigen::internal::traits<Derived>::ColsAtCompileTime; ++c) {
             stream >> m(r, c);
+        }
+    }
+}
+
+// this fix is required because stream >> m(r,c) reads one character at a time for char types.
+// e.g. it will read the vector "159 64 12" as (1, 5, 9) instead of (159, 64, 12)
+template <typename Derived>
+typename std::enable_if<0 < Eigen::internal::traits<Derived>::RowsAtCompileTime &&
+                        0 < Eigen::internal::traits<Derived>::ColsAtCompileTime &&
+        (std::is_same<unsigned char,typename Eigen::internal::traits<Derived>::Scalar>::value ||
+                        std::is_same<char,typename Eigen::internal::traits<Derived>::Scalar>::value), std::istream &>::type
+operator>>(std::istream & stream, Eigen::MatrixBase<Derived> & m) {
+    int val;
+    for (int r = 0; r < Eigen::internal::traits<Derived>::RowsAtCompileTime; ++r) {
+        for (int c = 0; c < Eigen::internal::traits<Derived>::ColsAtCompileTime; ++c) {
+            stream >> val;
+            m(r, c) = static_cast<typename Eigen::internal::traits<Derived>::Scalar>(val);
         }
     }
 }
