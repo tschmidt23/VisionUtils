@@ -255,7 +255,11 @@ void ParsePlyHeader(std::ifstream & stream,
 //            stream >> s;
 //            elementPropertyNames.back().push_back(s);
 
-        } else if (s != "comment") {
+        } else if (s == "comment") {
+
+            std::getline(stream, s);
+
+        } else {
 
             throw std::runtime_error("unexpected token '" + s + "'");
 
@@ -284,11 +288,11 @@ public:
         T element;
         stream >> element;
 
-        static bool printed = false;
-        if (!printed) {
-            std::cout << element << std::endl << std::endl;
-            printed = true;
-        }
+//        static bool printed = false;
+//        if (!printed) {
+//            std::cout << element << std::endl << std::endl;
+//            printed = true;
+//        }
 
     }
 
@@ -303,11 +307,11 @@ public:
     void Read(std::ifstream & stream, const int index) {
         stream >> vec_(index);
 
-        static bool printed = false;
-        if (!printed) {
-            std::cout << vec_(index) << std::endl << std::endl;
-            printed = true;
-        }
+//        static bool printed = false;
+//        if (!printed) {
+//            std::cout << vec_(index) << std::endl << std::endl;
+//            printed = true;
+//        }
 
     }
 
@@ -420,11 +424,11 @@ void ReadPly(NDT::ManagedVector<Vec3<float> > * vertices,
 
                     if (coordinateType == "float") {
                         if (vertices) {
-                            std::cout << "adding vertex keep reader" << std::endl;
+//                            std::cout << "adding vertex keep reader" << std::endl;
                             vertices->Resize(nElements);
                             readers.push_back(std::make_shared<KeepReader<Vec3<float> > >(*vertices));
                         } else {
-                            std::cout << "adding vertex throwaway reader" << std::endl;
+//                            std::cout << "adding vertex throwaway reader" << std::endl;
                             readers.push_back(std::make_shared<ThrowawayReader<Vec3<float> > >());
                         }
                     } else {
@@ -457,11 +461,11 @@ void ReadPly(NDT::ManagedVector<Vec3<float> > * vertices,
 
                     if (coordinateType == "float") {
                         if (normals) {
-                            std::cout << "adding normal keep reader" << std::endl;
+//                            std::cout << "adding normal keep reader" << std::endl;
                             normals->Resize(nElements);
                             readers.push_back(std::make_shared<KeepReader<Vec3<float> > >(*normals));
                         } else {
-                            std::cout << "adding normal throwaway reader" << std::endl;
+//                            std::cout << "adding normal throwaway reader" << std::endl;
                             readers.push_back(std::make_shared<ThrowawayReader<Vec3<float> > >());
                         }
                     } else {
@@ -494,11 +498,11 @@ void ReadPly(NDT::ManagedVector<Vec3<float> > * vertices,
 
                     if (coordinateType == "uchar") {
                         if (colors) {
-                            std::cout << "adding color keep reader" << std::endl;
+//                            std::cout << "adding color keep reader" << std::endl;
                             colors->Resize(nElements);
                             readers.push_back(std::make_shared<KeepReader<Vec3<unsigned char> > >(*colors));
                         } else {
-                            std::cout << "adding color throwaway reader" << std::endl;
+//                            std::cout << "adding color throwaway reader" << std::endl;
                             readers.push_back(std::make_shared<ThrowawayReader<Vec3<unsigned char> > >());
                         }
                     } else {
@@ -519,7 +523,7 @@ void ReadPly(NDT::ManagedVector<Vec3<float> > * vertices,
 
             for (int j = 0; j < propertyNames.size(); ++j) {
 
-                if (propertyNames[j] == "vertex_index") {
+                if (propertyNames[j] == "vertex_index" || propertyNames[j] == "vertex_indices") {
 
                     const std::string indexType = propertyTypeStrings[j];
 
@@ -536,7 +540,7 @@ void ReadPly(NDT::ManagedVector<Vec3<float> > * vertices,
 
                 } else {
 
-                    throw std::runtime_error("unrecongized property " + propertyNames[j]);
+                    throw std::runtime_error("unrecognized property " + propertyNames[j]);
 
                 }
 
