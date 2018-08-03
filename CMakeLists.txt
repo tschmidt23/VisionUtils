@@ -67,4 +67,4 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/Include/vu/
 		FILES_MATCHING PATTERN "*.h")
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/VisionUtilsConfig.cmake
-		DESTINATION share/vu/)
+		DESTINATION share/)

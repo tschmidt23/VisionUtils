@@ -159,6 +159,21 @@ void DrawPoints(const NDT::Vector<Vec3<float> > & points,
 }
 
 void DrawPoints(const NDT::Vector<Vec3<float> > & points,
+                const NDT::Vector<Vec3<unsigned char> > & colors,
+                const NDT::Vector<Vec3<int> > & faces) {
+    assert(points.Length() == colors.Length());
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(3, GL_FLOAT, 0, points.Data());
+    glEnableClientState(GL_COLOR_ARRAY);
+    glColorPointer(3, GL_UNSIGNED_BYTE, 0, colors.Data());
+    glDrawElements(GL_TRIANGLES, faces.Count() * 3, GL_UNSIGNED_INT, faces.Data());
+    glDisableClientState(GL_COLOR_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
+
+}
+
+void DrawPoints(const NDT::Vector<Vec3<float> > & points,
                 const NDT::Vector<Vec3<float> > & normals,
                 const NDT::Vector<Vec3<int> > & faces) {
     assert(points.Length() == normals.Length());
@@ -168,7 +183,7 @@ void DrawPoints(const NDT::Vector<Vec3<float> > & points,
     glEnableClientState(GL_NORMAL_ARRAY);
     glNormalPointer(GL_FLOAT, 0, normals.Data());
     glDrawElements(GL_TRIANGLES, faces.Count() * 3, GL_UNSIGNED_INT, faces.Data());
-    glDisableClientState(GL_COLOR_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
 
 }

@@ -32,6 +32,10 @@ void DrawPoints(const NDT::Vector<Vec<D, float> > & points,
                 const NDT::Vector<Vec3<unsigned char> > & colors);
 
 void DrawPoints(const NDT::Vector<Vec3<float> > & points,
+                const NDT::Vector<Vec3<unsigned char> > & colors,
+                const NDT::Vector<Vec3<int> > & faces);
+
+void DrawPoints(const NDT::Vector<Vec3<float> > & points,
                 const NDT::Vector<Vec3<float> > & normals,
                 const GLenum mode = GL_POINTS);
 
