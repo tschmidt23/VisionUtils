@@ -32,17 +32,21 @@ namespace vu {
 
 
 // -=-=-=- stream ops -=-=-=-
+namespace operators {
+
 template <typename Derived>
 typename std::enable_if<0 < Eigen::internal::traits<Derived>::RowsAtCompileTime &&
                         0 < Eigen::internal::traits<Derived>::ColsAtCompileTime &&
-                        !std::is_same<unsigned char,typename Eigen::internal::traits<Derived>::Scalar>::value &&
-                        !std::is_same<char,typename Eigen::internal::traits<Derived>::Scalar>::value, std::istream &>::type
+                        !std::is_same<unsigned char, typename Eigen::internal::traits<Derived>::Scalar>::value &&
+                        !std::is_same<char, typename Eigen::internal::traits<Derived>::Scalar>::value, std::istream &>::type
 operator>>(std::istream & stream, Eigen::MatrixBase<Derived> & m) {
     for (int r = 0; r < Eigen::internal::traits<Derived>::RowsAtCompileTime; ++r) {
         for (int c = 0; c < Eigen::internal::traits<Derived>::ColsAtCompileTime; ++c) {
             stream >> m(r, c);
         }
     }
+}
+
 }
 
 // this fix is required because stream >> m(r,c) reads one character at a time for char types.

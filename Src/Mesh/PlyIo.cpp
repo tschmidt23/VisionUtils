@@ -10,6 +10,8 @@
 
 namespace vu {
 
+using namespace operators;
+
 void WritePly(const NDT::Vector<Vec3<float> > & vertices,
               const NDT::Vector<Vec3<float> > & normals,
               const std::string filename) {

@@ -115,6 +115,7 @@ static inline uint SelectIndexFromCumulativeDistribution(const std::vector<Scala
 
 }
 
+//[[deprecated("new version available")]]
 template <typename T>
 void FisherYatesShuffle(std::vector<T> & vec, const int N) {
 
@@ -131,5 +132,6 @@ void FisherYatesShuffle(std::vector<T> & vec, const int N) {
     }
 
 }
+
 
 } // namespace vu
