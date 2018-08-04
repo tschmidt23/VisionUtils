@@ -393,7 +393,7 @@ void ReadPly(NDT::ManagedVector<Vec3<float> > * vertices,
 
         const std::string & s = elementTypeStrings[i];
 
-        std::cout << "element type " << i << ": " << s << std::endl;
+//        std::cout << "element type " << i << ": " << s << std::endl;
 
         if (s == "vertex") {
 
@@ -574,6 +574,14 @@ void ReadPly(NDT::ManagedVector<Vec3<float> > & vertices,
              const std::string filename) {
 
     ReadPly(&vertices, nullptr, nullptr, nullptr, filename);
+
+}
+
+void ReadPly(NDT::ManagedVector<Vec3<float> > & vertices,
+             NDT::ManagedVector<Vec3<float> > & normals,
+             const std::string filename) {
+
+    ReadPly(&vertices, &normals, nullptr, nullptr, filename);
 
 }
 
