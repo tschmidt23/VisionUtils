@@ -104,7 +104,14 @@ static inline std::pair<T1,T2> RemoveFromUniformlyAtRandom(const std::map<T1,T2>
 //
 //}
 
+template <typename Scalar>
+static inline uint SelectIndexFromCumulativeDistribution(const NDT::Vector<Scalar> & cdf) {
 
+    Scalar r = UniformSample<Scalar>();
+
+    return std::distance(cdf.Data(), std::lower_bound(cdf.Data(), cdf.Data() + cdf.Length(), r));
+
+}
 
 template <typename Scalar>
 static inline uint SelectIndexFromCumulativeDistribution(const std::vector<Scalar> & cdf) {
