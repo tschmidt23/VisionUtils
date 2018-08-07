@@ -360,4 +360,18 @@ struct LinearSystemAtomicAdder {
 
 };
 
+template <typename Scalar, int D>
+struct LinearSystemSolver {
+
+    __host__ __device__ inline static
+    Eigen::Matrix<Scalar, D, 1> Solve(const LinearSystem<Scalar, D> & system) {
+
+        Eigen::Matrix<Scalar, D, D, Eigen::DontAlign> JTJ = internal::SquareMatrixReconstructor<Scalar, D>::Reconstruct(system.JTJ);
+
+        return JTJ.template selfadjointView<Eigen::Upper>().ldlt().solve(system.JTr);
+
+    }
+
+};
+
 } // namespace vu
