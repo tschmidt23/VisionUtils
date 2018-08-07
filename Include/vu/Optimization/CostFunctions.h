@@ -208,7 +208,7 @@ struct LinearSystemCreationFunctorL2 {
     LinearSystem<Scalar,ModelDim> operator()(const JacobianAndResidual<Scalar,ResidualDim,ModelDim> & jacobianAndResidual) {
 
         // TODO: I thought transpose was slow?
-        return { JTJInitializer<Scalar,ResidualDim,ModelDim>::UpperTriangularJTJ(jacobianAndResidual.J),
+        return { internal::JTJInitializer<Scalar,ResidualDim,ModelDim>::UpperTriangularJTJ(jacobianAndResidual.J),
                  jacobianAndResidual.J.transpose() * jacobianAndResidual.r };
 
     }
@@ -224,7 +224,7 @@ struct WeightedLinearSystemCreationFunctorL2 {
     LinearSystem<Scalar,ModelDim> operator()(const JacobianAndResidual<Scalar,ResidualDim,ModelDim> & jacobianAndResidual) {
 
         // TODO: I thought transpose was slow?
-        return { JTJInitializer<Scalar,ResidualDim,ModelDim>::UpperTriangularJTJ(jacobianAndResidual.J),
+        return { internal::JTJInitializer<Scalar,ResidualDim,ModelDim>::UpperTriangularJTJ(jacobianAndResidual.J),
                  jacobianAndResidual.J.transpose() * weight_ * jacobianAndResidual.r };
 
     }
@@ -242,7 +242,7 @@ struct WeightedLinearSystemCreationFunctorL2<Scalar,1,ModelDim,Scalar> {
     LinearSystem<Scalar,ModelDim> operator()(const JacobianAndResidual<Scalar,1,ModelDim> & jacobianAndResidual) {
 
         // TODO: I thought transpose was slow?
-        return { JTJInitializer<Scalar,1,ModelDim>::UpperTriangularJTJ(jacobianAndResidual.J),
+        return { internal::JTJInitializer<Scalar,1,ModelDim>::UpperTriangularJTJ(jacobianAndResidual.J),
                  jacobianAndResidual.J.transpose() * weight_ * jacobianAndResidual.r };
 
     }
@@ -261,7 +261,7 @@ struct LinearSystemCreationFunctorHuber {
 
         const Scalar norm = GenericNorm(jacobianAndResidual.r);
 
-        LinearSystem<Scalar,ModelDim> system{ JTJInitializer<Scalar,ResidualDim,ModelDim>::UpperTriangularJTJ(jacobianAndResidual.J),
+        LinearSystem<Scalar,ModelDim> system{ internal::JTJInitializer<Scalar,ResidualDim,ModelDim>::UpperTriangularJTJ(jacobianAndResidual.J),
                                               jacobianAndResidual.J.transpose() * jacobianAndResidual.r };
 
         if (norm > alpha_) {
@@ -290,7 +290,7 @@ struct WeightedLinearSystemCreationFunctorHuber {
 
         const Scalar normSquared = jacobianAndResidual.r.transpose() * weight_ * jacobianAndResidual.r;
 
-        LinearSystem<Scalar,ModelDim> system{ JTJInitializer<Scalar,ResidualDim,ModelDim>::UpperTriangularJTJ(jacobianAndResidual.J),
+        LinearSystem<Scalar,ModelDim> system{ internal::JTJInitializer<Scalar,ResidualDim,ModelDim>::UpperTriangularJTJ(jacobianAndResidual.J),
                                               jacobianAndResidual.J.transpose() * weight_ * jacobianAndResidual.r };
 
         if (normSquared > alpha_ * alpha_) {
@@ -320,7 +320,7 @@ struct WeightedLinearSystemCreationFunctorHuber<Scalar, 1, ModelDim, Scalar> {
 
         const Scalar normSquared = jacobianAndResidual.r * weight_ * jacobianAndResidual.r;
 
-        LinearSystem<Scalar,ModelDim> system{ JTJInitializer<Scalar,1,ModelDim>::UpperTriangularJTJ(jacobianAndResidual.J),
+        LinearSystem<Scalar,ModelDim> system{ internal::JTJInitializer<Scalar,1,ModelDim>::UpperTriangularJTJ(jacobianAndResidual.J),
                                               jacobianAndResidual.J.transpose() * weight_ * jacobianAndResidual.r };
 
         if (normSquared > alpha_ * alpha_) {

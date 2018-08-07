@@ -352,9 +352,9 @@ struct LinearSystemAtomicAdder {
     __host__ __device__ inline static
     void AtomicAdd(LinearSystem<Scalar,D> & destination, const LinearSystem<Scalar,D> & source) {
 
-        JTJAtomicAdder<Scalar,D>::AtomicAdd(destination.JTJ, source.JTJ);
+        internal::JTJAtomicAdder<Scalar,D>::AtomicAdd(destination.JTJ, source.JTJ);
 
-        VectorAtomicAdder<Scalar,D>::AtomicAdd(destination.JTr.data(), source.JTr);
+        internal::VectorAtomicAdder<Scalar,D>::AtomicAdd(destination.JTr.data(), source.JTr);
 
     }
 
