@@ -300,6 +300,17 @@ public:
 
 };
 
+template <>
+class ThrowawayReader<unsigned char> : public Reader {
+public:
+
+    void Read(std::ifstream & stream, const int /*index*/) {
+        int element;
+        stream >> element;
+    }
+
+};
+
 template <typename T>
 class KeepReader : public Reader {
 public:
@@ -335,7 +346,8 @@ public:
         stream >> length;
 
         if (length != Length) {
-            throw std::runtime_error("expected length " + std::to_string(Length));
+            throw std::runtime_error("expected length " + std::to_string(Length) + ", got " + std::to_string(length) +
+             " @ index " + std::to_string(index));
         }
 
         stream >> vec_(index);
@@ -511,6 +523,15 @@ void ReadPly(NDT::ManagedVector<Vec3<float> > * vertices,
                         throw std::runtime_error("unhandled normal type '" + coordinateType + "'");
                     }
 
+                } else if (propertyNames[j] == "alpha") {
+
+                    // TODO: might actually want to keep this sometimes
+                    if (propertyTypeStrings[j] == "uchar") {
+                        readers.push_back(std::make_shared<ThrowawayReader<unsigned char> >());
+                    } else {
+                        throw std::runtime_error("unexpected alpha type");
+                    }
+
                 } else {
 
                     throw std::runtime_error("unrecongized property " + propertyNames[j]);
@@ -586,10 +607,28 @@ void ReadPly(NDT::ManagedVector<Vec3<float> > & vertices,
 }
 
 void ReadPly(NDT::ManagedVector<Vec3<float> > & vertices,
+             NDT::ManagedVector<Vec3<float> > & normals,
+             NDT::ManagedVector<Vec3<unsigned char> > & colors,
+             const std::string filename) {
+
+    ReadPly(&vertices, &normals, &colors, nullptr, filename);
+
+}
+
+void ReadPly(NDT::ManagedVector<Vec3<float> > & vertices,
              NDT::ManagedVector<Vec3<int> > & faces,
              const std::string filename) {
 
     ReadPly(&vertices, nullptr, nullptr, &faces, filename);
+
+}
+
+void ReadPly(NDT::ManagedVector<Vec3<float> > & vertices,
+             NDT::ManagedVector<Vec3<float> > & normals,
+             NDT::ManagedVector<Vec3<int> > & faces,
+             const std::string filename) {
+
+    ReadPly(&vertices, &normals, nullptr, &faces, filename);
 
 }
 

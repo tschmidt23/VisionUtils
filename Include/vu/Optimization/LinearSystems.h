@@ -368,7 +368,7 @@ struct LinearSystemSolver {
 
         Eigen::Matrix<Scalar, D, D, Eigen::DontAlign> JTJ = internal::SquareMatrixReconstructor<Scalar, D>::Reconstruct(system.JTJ);
 
-        return JTJ.template selfadjointView<Eigen::Upper>().ldlt().solve(system.JTr);
+        return -JTJ.template selfadjointView<Eigen::Upper>().ldlt().solve(system.JTr);
 
     }
 

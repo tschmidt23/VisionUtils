@@ -42,7 +42,7 @@ UniformSample(const Scalar min = Scalar(0), const Scalar max = Scalar(1)) {
 template <typename T>
 static inline const T & SelectFromUniformlyAtRandom(const std::vector<T> & vec, uint & index) {
 
-    index = UniformIntSample(0,vec.size()-1);
+    index = UniformSample(0ul, vec.size()-1);
 
     return vec[index];
 
