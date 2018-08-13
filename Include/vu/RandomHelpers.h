@@ -39,6 +39,21 @@ UniformSample(const Scalar min = Scalar(0), const Scalar max = Scalar(1)) {
 //    return min + UniformUnitSample()*(max-min);
 }
 
+template <typename Scalar>
+Vec3<Scalar> UniformSampleInSphere(const Scalar R) {
+
+    const Scalar theta = UniformSample<Scalar>(0, 2 * M_PI);
+
+    const Scalar phi = std::acos(UniformSample<Scalar>(-1, 1));
+
+    const Scalar r = R * std::cbrt(UniformSample<Scalar>());
+
+    return r * Vec3<Scalar>(std::sin(phi) * std::cos(theta),
+                            std::sin(phi) * std::sin(theta),
+                            std::cos(phi));
+
+}
+
 template <typename T>
 static inline const T & SelectFromUniformlyAtRandom(const std::vector<T> & vec, uint & index) {
 
