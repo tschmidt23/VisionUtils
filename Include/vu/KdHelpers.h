@@ -57,6 +57,53 @@ private:
 
 using KdPointCloudTree = nanoflann::KDTreeSingleIndexAdaptor<nanoflann::L2_Simple_Adaptor<float, KdPointCloud>, KdPointCloud, 3, int>;
 
+
+
+struct KdIndexedPointCloud {
+public:
+
+    KdIndexedPointCloud(const NDT::Vector<Vec3<float> > & points,
+                        const NDT::Vector<int> & indices)
+            : points_(points), indices_(indices) { }
+
+    // Must return the number of data points
+    inline size_t kdtree_get_point_count() const {
+        return indices_.Count();
+    }
+
+    // Returns the distance between the vector "p1[0:size-1]" and the data point with index "idx_p2" stored in the class:
+    inline float kdtree_distance(const float * p1, const size_t idx_p2, size_t /*size*/) const {
+        Eigen::Map<const Vec3<float> > p(p1);
+//        if (p(2) > 0) {
+        return (p - points_(indices_(idx_p2))).squaredNorm();
+//        } else {
+//            return std::numeric_limits<float>::infinity();
+//        }
+    }
+
+    // Returns the dim'th component of the idx'th point in the class:
+    // Since this is inlined and the "dim" argument is typically an immediate value, the
+    //  "if/else's" are actually solved at compile time.
+    inline float kdtree_get_pt(const size_t idx, int dim) const {
+        return points_(indices_(idx))(dim);
+    }
+
+    // Optional bounding-box computation: return false to default to a standard bbox computation loop.
+    //   Return true if the BBOX was already computed by the class and returned in "bb" so it can be avoided to redo it again.
+    //   Look at bb.size() to find out the expected dimensionality (e.g. 2 or 3 for point clouds)
+    template <class BBOX>
+    bool kdtree_get_bbox(BBOX & /*bb*/) const { return false; }
+
+private:
+
+    NDT::ConstVector<Vec3<float> > points_;
+    NDT::ConstVector<int> indices_;
+
+};
+
+using KdIndexedPointCloudTree = nanoflann::KDTreeSingleIndexAdaptor<nanoflann::L2_Simple_Adaptor<float, KdIndexedPointCloud>, KdIndexedPointCloud, 3, int>;
+
+
 //struct KdVertMap {
 //public:
 //
