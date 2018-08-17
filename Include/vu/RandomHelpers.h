@@ -40,6 +40,14 @@ UniformSample(const Scalar min = Scalar(0), const Scalar max = Scalar(1)) {
 }
 
 template <typename Scalar>
+static inline
+typename std::enable_if<std::is_floating_point<Scalar>::value, Scalar>::type
+NormalSample(const Scalar mean = Scalar(0), const Scalar stdDev = Scalar(1)) {
+    std::normal_distribution<Scalar> distribution(mean, stdDev);
+    return distribution(Generator());
+};
+
+template <typename Scalar>
 Vec3<Scalar> UniformSampleInSphere(const Scalar R) {
 
     const Scalar theta = UniformSample<Scalar>(0, 2 * M_PI);
