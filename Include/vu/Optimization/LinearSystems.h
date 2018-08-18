@@ -36,6 +36,14 @@ struct UpperTriangularMatrix {
     UpperTriangularMatrix<Scalar,D> operator+(const UpperTriangularMatrix<Scalar,D> & other) const {
         return { head + other.head, tail + other.tail };
     }
+
+    __attribute__((always_inline)) __host__ __device__
+    UpperTriangularMatrix<Scalar, D> & operator+=(const UpperTriangularMatrix<Scalar, D> & other) {
+        head += other.head;
+        tail += other.tail;
+        return *this;
+    }
+
 };
 
 template <typename Scalar>
@@ -50,6 +58,12 @@ struct  UpperTriangularMatrix<Scalar,1> {
     __attribute__((always_inline)) __host__ __device__
     UpperTriangularMatrix<Scalar,1> operator+(const UpperTriangularMatrix & other) const {
         return { head + other.head };
+    }
+
+    __attribute__((always_inline)) __host__ __device__
+    UpperTriangularMatrix<Scalar, 1> & operator+=(const UpperTriangularMatrix<Scalar, 1> & other) {
+        head += other.head;
+        return *this;
     }
 
 };
