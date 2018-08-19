@@ -25,11 +25,13 @@ void DrawPoints(const NDT::Vector<Vec3<float> > & points, const GLuint mode = GL
 
 template <int D>
 void DrawPoints(const NDT::Image<Vec<D, float> > & points,
-                const NDT::Image<Vec3<unsigned char> > & colors);
+                const NDT::Image<Vec3<unsigned char> > & colors,
+                const GLuint mode = GL_POINTS);
 
 template <int D>
 void DrawPoints(const NDT::Vector<Vec<D, float> > & points,
-                const NDT::Vector<Vec3<unsigned char> > & colors);
+                const NDT::Vector<Vec3<unsigned char> > & colors,
+                const GLuint mode = GL_POINTS);
 
 void DrawPoints(const NDT::Vector<Vec3<float> > & points,
                 const NDT::Vector<Vec3<unsigned char> > & colors,
