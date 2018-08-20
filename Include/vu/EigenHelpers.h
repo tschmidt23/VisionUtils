@@ -17,16 +17,28 @@
 
 // -=-=-=- types -=-=-=-
 template <int D, typename Scalar>
-using Vec = Eigen::Matrix<Scalar,D,1,Eigen::DontAlign>;
+using Vec = Eigen::Matrix<Scalar, D, 1, Eigen::DontAlign>;
 
 template <typename Scalar>
-using Vec2 = Vec<2,Scalar>;
+using Vec2 = Vec<2, Scalar>;
 
 template <typename Scalar>
-using Vec3 = Vec<3,Scalar>;
+using Vec3 = Vec<3, Scalar>;
 
 template <typename Scalar>
-using Vec4 = Vec<4,Scalar>;
+using Vec4 = Vec<4, Scalar>;
+
+template <int R, int C, typename Scalar>
+using Mat = Eigen::Matrix<Scalar, R, C, Eigen::DontAlign>;
+
+template <typename Scalar>
+using Mat2 = Mat<2, 2, Scalar>;
+
+template <typename Scalar>
+using Mat3 = Mat<3, 3, Scalar>;
+
+template <typename Scalar>
+using Mat4 = Mat<4, 4, Scalar>;
 
 namespace vu {
 
