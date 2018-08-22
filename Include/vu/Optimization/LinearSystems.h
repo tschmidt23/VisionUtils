@@ -103,10 +103,17 @@ struct LinearSystem {
         return { UpperTriangularMatrix<Scalar,ModelDim>::Zero(), Eigen::Matrix<Scalar,ModelDim,1,Eigen::DontAlign | Eigen::ColMajor>::Zero() };
     }
 
-    inline __host__ __device__ LinearSystem<Scalar,ModelDim> operator+(const LinearSystem<Scalar,ModelDim> & other) const {
+    inline __host__ __device__ LinearSystem<Scalar, ModelDim> operator+(const LinearSystem<Scalar,ModelDim> & other) const {
 
         return { JTJ + other.JTJ, JTr + other.JTr };
 
+    }
+
+    inline __host__ __device__
+    LinearSystem<Scalar, ModelDim> & operator+=(const LinearSystem<Scalar, ModelDim> & other) {
+        JTJ += other.JTJ;
+        JTr += other.JTr;
+        return *this;
     }
 
     UpperTriangularMatrix<Scalar,ModelDim> JTJ;
