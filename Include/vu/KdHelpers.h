@@ -62,8 +62,8 @@ using KdPointCloudTree = nanoflann::KDTreeSingleIndexAdaptor<nanoflann::L2_Simpl
 struct KdIndexedPointCloud {
 public:
 
-    KdIndexedPointCloud(const NDT::Vector<Vec3<float> > & points,
-                        const NDT::Vector<int> & indices)
+    KdIndexedPointCloud(const NDT::ConstVector<Vec3<float> > & points,
+                        const NDT::ConstVector<int> & indices)
             : points_(points), indices_(indices) { }
 
     // Must return the number of data points
