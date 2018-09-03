@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vu/CudaHelpers.h>
+
 namespace vu {
 
 
@@ -342,7 +344,7 @@ struct VectorAtomicAdder {
 
         if (source(0) != Scalar(0)) {
             Scalar val = source(0);
-            AtomicAdd(destination, val);
+            vu::AtomicAdd(destination, val);
         }
 
         VectorAtomicAdder<Scalar, D - 1>::AtomicAdd(destination + 1, source.template block<1, D - 1>(0, 1));
@@ -368,7 +370,7 @@ struct JTJAtomicAdder {
     __host__ __device__
 
     inline static
-    void atomicAdd(UpperTriangularMatrix<Scalar, D> & destination, const UpperTriangularMatrix<Scalar, D> & source) {
+    void AtomicAdd(UpperTriangularMatrix<Scalar, D> & destination, const UpperTriangularMatrix<Scalar, D> & source) {
 
         VectorAtomicAdder<Scalar, D>::AtomicAdd(destination.head.data(), source.head);
 
