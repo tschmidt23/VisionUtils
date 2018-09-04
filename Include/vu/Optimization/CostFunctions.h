@@ -259,7 +259,7 @@ struct LinearSystemCreationFunctorHuber {
     __attribute__((always_inline)) __host__ __device__
     LinearSystem<Scalar,ModelDim> operator()(const JacobianAndResidual<Scalar,ResidualDim,ModelDim> & jacobianAndResidual) {
 
-        const Scalar norm = GenericNorm(jacobianAndResidual.r);
+        const Scalar norm = internal::GenericNorm(jacobianAndResidual.r);
 
         LinearSystem<Scalar,ModelDim> system{ internal::JTJInitializer<Scalar,ResidualDim,ModelDim>::UpperTriangularJTJ(jacobianAndResidual.J),
                                               jacobianAndResidual.J.transpose() * jacobianAndResidual.r };
