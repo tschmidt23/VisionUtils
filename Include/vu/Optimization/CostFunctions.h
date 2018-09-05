@@ -43,7 +43,7 @@ template <typename Scalar, int ResidualDim, int ModelDim>
 struct ResidualFunctorL2 {
 
     __attribute__((always_inline)) __host__ __device__
-    Scalar operator()(const JacobianAndResidual<Scalar,ResidualDim,ModelDim> & jacobianAndResidual) {
+    Scalar operator()(const JacobianAndResidual<Scalar,ResidualDim,ModelDim> & jacobianAndResidual) const {
 
         return Scalar(0.5) * jacobianAndResidual.r.squaredNorm();
     }
@@ -54,7 +54,7 @@ template <typename Scalar, int ModelDim>
 struct ResidualFunctorL2<Scalar,1,ModelDim> {
 
     __attribute__((always_inline)) __host__ __device__
-    Scalar operator()(const JacobianAndResidual<Scalar,1,ModelDim> & jacobianAndResidual) {
+    Scalar operator()(const JacobianAndResidual<Scalar,1,ModelDim> & jacobianAndResidual) const {
 
         return Scalar(0.5) * jacobianAndResidual.r * jacobianAndResidual.r;
 
@@ -68,7 +68,7 @@ struct WeightedResidualFunctorL2 {
     WeightedResidualFunctorL2(const WeightType & weight) : weight_(weight) { }
 
     __attribute__((always_inline)) __host__ __device__
-    Scalar operator()(const JacobianAndResidual<Scalar,ResidualDim,ModelDim> & jacobianAndResidual) {
+    Scalar operator()(const JacobianAndResidual<Scalar,ResidualDim,ModelDim> & jacobianAndResidual) const {
 
         // TODO: I think transpose is slow
         return Scalar(0.5) * jacobianAndResidual.r.transpose() * weight_ * jacobianAndResidual.r;
@@ -85,7 +85,7 @@ struct WeightedResidualFunctorL2<Scalar,1,ModelDim,Scalar> {
     WeightedResidualFunctorL2(const Scalar weight) : weight_(weight) { }
 
     __attribute__((always_inline)) __host__ __device__
-    Scalar operator()(const JacobianAndResidual<Scalar,1,ModelDim> & jacobianAndResidual) {
+    Scalar operator()(const JacobianAndResidual<Scalar,1,ModelDim> & jacobianAndResidual) const {
 
         return Scalar(0.5) * jacobianAndResidual.r * weight_ * jacobianAndResidual.r;
 
@@ -101,7 +101,7 @@ struct ResidualFunctorHuber {
     ResidualFunctorHuber(const Scalar alpha) : alpha_(alpha) { }
 
     __attribute__((always_inline)) __host__ __device__
-    Scalar operator()(const JacobianAndResidual<Scalar,ResidualDim,ModelDim> & jacobianAndResidual) {
+    Scalar operator()(const JacobianAndResidual<Scalar,ResidualDim,ModelDim> & jacobianAndResidual) const {
 
         const Scalar norm = jacobianAndResidual.r.norm();
 
@@ -127,7 +127,7 @@ struct ResidualFunctorHuber<Scalar,1,ModelDim> {
     ResidualFunctorHuber(const Scalar alpha) : alpha_(alpha) { }
 
     __attribute__((always_inline)) __host__ __device__
-    Scalar operator()(const JacobianAndResidual<Scalar,1,ModelDim> & jacobianAndResidual) {
+    Scalar operator()(const JacobianAndResidual<Scalar,1,ModelDim> & jacobianAndResidual) const {
 
         const Scalar norm = fabsf(jacobianAndResidual.r);
 
@@ -153,7 +153,7 @@ struct WeightedResidualFunctorHuber {
     WeightedResidualFunctorHuber(const Scalar alpha, const WeightType & weight) : alpha_(alpha), weight_(weight) { }
 
     __attribute__((always_inline)) __host__ __device__
-    Scalar operator()(const JacobianAndResidual<Scalar,ResidualDim,ModelDim> & jacobianAndResidual) {
+    Scalar operator()(const JacobianAndResidual<Scalar,ResidualDim,ModelDim> & jacobianAndResidual) const {
 
         const Scalar normSquared = jacobianAndResidual.r.transpose() * weight_ * jacobianAndResidual.r;
 
@@ -180,7 +180,7 @@ struct WeightedResidualFunctorHuber<Scalar, 1, ModelDim, Scalar> {
     WeightedResidualFunctorHuber(const Scalar alpha, const Scalar weight) : alpha_(alpha), weight_(weight) { }
 
     __attribute__((always_inline)) __host__ __device__
-    Scalar operator()(const JacobianAndResidual<Scalar,1,ModelDim> & jacobianAndResidual) {
+    Scalar operator()(const JacobianAndResidual<Scalar,1,ModelDim> & jacobianAndResidual) const {
 
         const Scalar normSquared = jacobianAndResidual.r * weight_ * jacobianAndResidual.r;
 
@@ -205,7 +205,7 @@ template <typename Scalar, int ResidualDim, int ModelDim>
 struct LinearSystemCreationFunctorL2 {
 
     __attribute__((always_inline)) __host__ __device__
-    LinearSystem<Scalar,ModelDim> operator()(const JacobianAndResidual<Scalar,ResidualDim,ModelDim> & jacobianAndResidual) {
+    LinearSystem<Scalar,ModelDim> operator()(const JacobianAndResidual<Scalar,ResidualDim,ModelDim> & jacobianAndResidual) const {
 
         // TODO: I thought transpose was slow?
         return { internal::JTJInitializer<Scalar,ResidualDim,ModelDim>::UpperTriangularJTJ(jacobianAndResidual.J),
@@ -221,7 +221,7 @@ struct WeightedLinearSystemCreationFunctorL2 {
     WeightedLinearSystemCreationFunctorL2(const WeightType & weight) : weight_(weight) { }
 
     __attribute__((always_inline)) __host__ __device__
-    LinearSystem<Scalar,ModelDim> operator()(const JacobianAndResidual<Scalar,ResidualDim,ModelDim> & jacobianAndResidual) {
+    LinearSystem<Scalar,ModelDim> operator()(const JacobianAndResidual<Scalar,ResidualDim,ModelDim> & jacobianAndResidual) const {
 
         // TODO: I thought transpose was slow?
         return { internal::JTJInitializer<Scalar,ResidualDim,ModelDim>::UpperTriangularJTJ(jacobianAndResidual.J),
@@ -239,7 +239,7 @@ struct WeightedLinearSystemCreationFunctorL2<Scalar,1,ModelDim,Scalar> {
     WeightedLinearSystemCreationFunctorL2(const Scalar weight) : weight_(weight) { }
 
     __attribute__((always_inline)) __host__ __device__
-    LinearSystem<Scalar,ModelDim> operator()(const JacobianAndResidual<Scalar,1,ModelDim> & jacobianAndResidual) {
+    LinearSystem<Scalar,ModelDim> operator()(const JacobianAndResidual<Scalar,1,ModelDim> & jacobianAndResidual) const {
 
         // TODO: I thought transpose was slow?
         return { internal::JTJInitializer<Scalar,1,ModelDim>::UpperTriangularJTJ(jacobianAndResidual.J),
@@ -257,7 +257,7 @@ struct LinearSystemCreationFunctorHuber {
     LinearSystemCreationFunctorHuber(const Scalar alpha) : alpha_(alpha) { }
 
     __attribute__((always_inline)) __host__ __device__
-    LinearSystem<Scalar,ModelDim> operator()(const JacobianAndResidual<Scalar,ResidualDim,ModelDim> & jacobianAndResidual) {
+    LinearSystem<Scalar,ModelDim> operator()(const JacobianAndResidual<Scalar,ResidualDim,ModelDim> & jacobianAndResidual) const {
 
         const Scalar norm = internal::GenericNorm(jacobianAndResidual.r);
 
@@ -286,7 +286,7 @@ struct WeightedLinearSystemCreationFunctorHuber {
     WeightedLinearSystemCreationFunctorHuber(const Scalar alpha, const WeightType & weight) : alpha_(alpha), weight_(weight) { }
 
     __attribute__((always_inline)) __host__ __device__
-    LinearSystem<Scalar,ModelDim> operator()(const JacobianAndResidual<Scalar,ResidualDim,ModelDim> & jacobianAndResidual) {
+    LinearSystem<Scalar,ModelDim> operator()(const JacobianAndResidual<Scalar,ResidualDim,ModelDim> & jacobianAndResidual) const {
 
         const Scalar normSquared = jacobianAndResidual.r.transpose() * weight_ * jacobianAndResidual.r;
 
@@ -316,7 +316,7 @@ struct WeightedLinearSystemCreationFunctorHuber<Scalar, 1, ModelDim, Scalar> {
     WeightedLinearSystemCreationFunctorHuber(const Scalar alpha, const Scalar weight) : alpha_(alpha), weight_(weight) { }
 
     __attribute__((always_inline)) __host__ __device__
-    LinearSystem<Scalar,ModelDim> operator()(const JacobianAndResidual<Scalar,1,ModelDim> & jacobianAndResidual) {
+    LinearSystem<Scalar,ModelDim> operator()(const JacobianAndResidual<Scalar,1,ModelDim> & jacobianAndResidual) const {
 
         const Scalar normSquared = jacobianAndResidual.r * weight_ * jacobianAndResidual.r;
 
