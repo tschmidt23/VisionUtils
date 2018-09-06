@@ -22,7 +22,8 @@ namespace vu {
 void DrawPoints(const NDT::Image<Vec3<float> > & points, const GLuint mode = GL_POINTS);
 
 void DrawPoints(const NDT::Image<Vec3<float> > & points,
-                const NDT::Image<Vec3<float> > & normals);
+                const NDT::Image<Vec3<float> > & normals,
+                const GLuint mode = GL_POINTS);
 
 void DrawPoints(const NDT::Vector<Vec3<float> > & points, const GLuint mode = GL_POINTS);
 
