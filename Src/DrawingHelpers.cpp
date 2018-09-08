@@ -44,6 +44,7 @@ void DrawPoints(const NDT::Image<Vec3<float> > & points, const GLuint mode) {
 
 }
 
+
 void DrawPoints(const NDT::Image<Vec3<float> > & points,
                 const NDT::Image<Vec3<float> > & normals,
                 const GLenum mode) {
@@ -82,14 +83,20 @@ template void DrawPoints(const NDT::Image<Vec3<float> > &, const NDT::Image<Vec3
 
 template void DrawPoints(const NDT::Image<Vec4<float> > &, const NDT::Image<Vec3<unsigned char> > &, const GLuint);
 
-void DrawPoints(const NDT::Vector<Vec3<float> > & points, const GLuint mode) {
+template <int D>
+void DrawPoints(const NDT::Vector<Vec<D, float> > & points, const GLuint mode) {
 
     glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(3, GL_FLOAT, 0, points.Data());
+    glVertexPointer(D, GL_FLOAT, 0, points.Data());
     glDrawArrays(mode, 0, points.Count());
     glDisableClientState(GL_VERTEX_ARRAY);
 
 }
+
+template void DrawPoints(const NDT::Vector<Vec2<float> > &, const GLuint);
+
+template void DrawPoints(const NDT::Vector<Vec3<float> > &, const GLuint);
+
 
 void DrawPoints(const NDT::Vector<Vec3<float> > & points,
                 const NDT::Vector<int> & indices,

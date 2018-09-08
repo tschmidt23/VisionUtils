@@ -25,7 +25,8 @@ void DrawPoints(const NDT::Image<Vec3<float> > & points,
                 const NDT::Image<Vec3<float> > & normals,
                 const GLuint mode = GL_POINTS);
 
-void DrawPoints(const NDT::Vector<Vec3<float> > & points, const GLuint mode = GL_POINTS);
+template <int D>
+void DrawPoints(const NDT::Vector<Vec<D, float> > & points, const GLuint mode = GL_POINTS);
 
 void DrawPoints(const NDT::Vector<Vec3<float> > & points,
                 const NDT::Vector<int> & indices,
@@ -73,7 +74,7 @@ float OscillatingValue(const float d0, const float amplitude, const float freque
 void GlOscillatingPointSize(const float d0, const float amplitude, const float frequency = 1.f);
 
 template <typename Scalar>
-inline void GlMultMatrix(Sophus::SE3<Scalar> & T) {
+inline void GlMultMatrix(const Sophus::SE3<Scalar> & T) {
     glMultMatrixf(T.matrix().transpose().data());
 }
 
