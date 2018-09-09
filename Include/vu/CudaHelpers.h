@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cuda_runtime.h>
+
 namespace vu {
 
 template <typename Scalar>
@@ -24,5 +26,12 @@ inline __device__ double AtomicAdd(double * address, double val) {
     return __longlong_as_double(old);
 }
 #endif // __CUDACC__
+
+template <typename I>
+__host__ __device__
+inline I IntDivideAndCeil(I numerator, I denominator) {
+    return (numerator + denominator - 1) / denominator;
+}
+
 
 } // namespace vu

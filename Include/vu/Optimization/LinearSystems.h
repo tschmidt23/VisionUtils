@@ -62,7 +62,6 @@ struct UpperTriangularMatrix {
         return tail(r-1, c-1);
     }
 
-
 };
 
 template <typename Scalar>
@@ -125,26 +124,33 @@ struct LinearSystem {
 
 
 // -=-=-=-=- helper functors -=-=-=-=-
-template <typename Scalar>
-inline __host__ __device__ UpperTriangularMatrix<Scalar,1> operator*(const Scalar a, const UpperTriangularMatrix<Scalar,1> & M) {
+namespace operators {
 
-    return { a * M.head };
+template <typename Scalar>
+inline __host__ __device__ UpperTriangularMatrix<Scalar, 1>
+operator*(const Scalar a, const UpperTriangularMatrix<Scalar, 1> & M) {
+
+    return {a * M.head};
 
 }
 
 template <typename Scalar, int D>
-inline __host__ __device__ UpperTriangularMatrix<Scalar,D> operator*(const Scalar a, const UpperTriangularMatrix<Scalar,D> & M) {
+inline __host__ __device__ UpperTriangularMatrix<Scalar, D>
+operator*(const Scalar a, const UpperTriangularMatrix<Scalar, D> & M) {
 
-    return { a * M.head, a * M.tail };
+    return {a * M.head, a * M.tail};
 
 }
 
 template <typename Scalar, int ModelDim>
-inline __host__ __device__ LinearSystem<Scalar,ModelDim> operator*(const Scalar a, const LinearSystem<Scalar,ModelDim> & system) {
+inline __host__ __device__ LinearSystem<Scalar, ModelDim>
+operator*(const Scalar a, const LinearSystem<Scalar, ModelDim> & system) {
 
-    return { a * system.JTJ, a * system.JTr };
+    return {a * system.JTJ, a * system.JTr};
 
 }
+
+} // namespace operators
 
 namespace internal {
 

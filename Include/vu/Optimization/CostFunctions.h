@@ -163,7 +163,7 @@ struct WeightedResidualFunctorHuber {
 
         } else {
 
-            return alpha_ * (GenericSqrt(normSquared) - Scalar(0.5) * alpha_);
+            return alpha_ * (internal::GenericSqrt(normSquared) - Scalar(0.5) * alpha_);
 
         }
 
@@ -190,7 +190,7 @@ struct WeightedResidualFunctorHuber<Scalar, 1, ModelDim, Scalar> {
 
         } else {
 
-            return alpha_ * (GenericSqrt(normSquared) - Scalar(0.5) * alpha_);
+            return alpha_ * (internal::GenericSqrt(normSquared) - Scalar(0.5) * alpha_);
 
         }
 
@@ -295,7 +295,7 @@ struct WeightedLinearSystemCreationFunctorHuber {
 
         if (normSquared > alpha_ * alpha_) {
 
-            return (alpha_ / GenericSqrt(normSquared)) * system;
+            return (alpha_ / internal::GenericSqrt(normSquared)) * system;
 
         } else {
 
@@ -325,7 +325,7 @@ struct WeightedLinearSystemCreationFunctorHuber<Scalar, 1, ModelDim, Scalar> {
 
         if (normSquared > alpha_ * alpha_) {
 
-            return (alpha_ / GenericSqrt(normSquared)) * system;
+            return (alpha_ / internal::GenericSqrt(normSquared)) * system;
 
         } else {
 
