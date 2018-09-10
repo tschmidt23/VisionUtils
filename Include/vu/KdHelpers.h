@@ -12,13 +12,14 @@
 
 namespace vu {
 
-struct KdPointCloud {
+template <int D>
+struct KdVertexList {
 public:
 
-    KdPointCloud(const NDT::Vector<Vec3<float> > & points)
+    KdVertexList(const NDT::Vector<Vec<D, float> > & points)
             : points_(points) { }
 
-    KdPointCloud(const NDT::Image<Vec3<float> > & points)
+    KdVertexList(const NDT::Image<Vec<D, float> > & points)
             : points_(points.Count(), points.Data()) { }
 
     // Must return the number of data points
@@ -28,7 +29,7 @@ public:
 
     // Returns the distance between the vector "p1[0:size-1]" and the data point with index "idx_p2" stored in the class:
     inline float kdtree_distance(const float * p1, const size_t idx_p2,size_t /*size*/) const {
-        Eigen::Map<const Vec3<float> > p(p1);
+        Eigen::Map<const Vec<D, float> > p(p1);
 //        if (p(2) > 0) {
         return (p - points_(idx_p2)).squaredNorm();
 //        } else {
@@ -51,9 +52,15 @@ public:
 
 private:
 
-    NDT::ConstVector<Vec3<float> > points_;
+    NDT::ConstVector<Vec<D, float> > points_;
 
 };
+
+template <int D>
+using KdVertexListTree = nanoflann::KDTreeSingleIndexAdaptor<nanoflann::L2_Simple_Adaptor<float, KdVertexList<D> >, KdVertexList<D>, D, int>;
+
+
+using KdPointCloud = KdVertexList<3>;
 
 using KdPointCloudTree = nanoflann::KDTreeSingleIndexAdaptor<nanoflann::L2_Simple_Adaptor<float, KdPointCloud>, KdPointCloud, 3, int>;
 

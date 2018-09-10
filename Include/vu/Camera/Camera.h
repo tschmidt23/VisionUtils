@@ -30,11 +30,13 @@ public:
 
     virtual std::string ModelName() const = 0;
 
-    virtual Eigen::Matrix<T,2,1> Project(const Eigen::Matrix<T,3,1> point3d) const = 0;
+    virtual Eigen::Matrix<T, 2, 1> Project(const Eigen::Matrix<T, 3, 1> point3d) const = 0;
 
-    virtual Eigen::Matrix<T,3,1> Unproject(const Eigen::Matrix<T,2,1> point2d, const T depth) const = 0;
+    virtual Eigen::Matrix<T, 3, 1> Unproject(const Eigen::Matrix<T, 2, 1> point2d, const T depth) const = 0;
 
-    virtual Eigen::Matrix<T,2,3> ProjectionDerivative(const Eigen::Matrix<T,3,1> point3d) const = 0;
+    virtual Eigen::Matrix<T, 2, 3> ProjectionDerivative(const Eigen::Matrix<T, 3, 1> point3d) const = 0;
+
+    virtual Eigen::Matrix<T, 2, 1> Dehomogenize(const Eigen::Matrix<T, 3, 1> point3d) const = 0;
 
 private:
 
@@ -71,17 +73,21 @@ public:
         return model_.ModelName();
     }
 
-    inline Eigen::Matrix<T,2,1> Project(const Eigen::Matrix<T,3,1> point3d) const override {
+    inline Eigen::Matrix<T, 2, 1> Project(const Eigen::Matrix<T,3,1> point3d) const override {
         return model_.Project(point3d);
     }
 
-    inline Eigen::Matrix<T,3,1> Unproject(const Eigen::Matrix<T,2,1> point2d, const T depth) const override {
-        return model_.Unproject(point2d,depth);
+    inline Eigen::Matrix<T, 3, 1> Unproject(const Eigen::Matrix<T,2,1> point2d, const T depth) const override {
+        return model_.Unproject(point2d, depth);
     }
 
-    inline Eigen::Matrix<T,2,3> ProjectionDerivative(const Eigen::Matrix<T,3,1> point3d) const override {
+    inline Eigen::Matrix<T, 2, 3> ProjectionDerivative(const Eigen::Matrix<T,3,1> point3d) const override {
         return model_.ProjectionDerivative(point3d);
     };
+
+    inline Eigen::Matrix<T, 2, 1> Dehomogenize(const Eigen::Matrix<T, 3, 1> point3d) const override {
+        return model_.Dehomogenize(point3d);
+    }
 
     inline ModelT<T> & Model() { return model_; }
 
