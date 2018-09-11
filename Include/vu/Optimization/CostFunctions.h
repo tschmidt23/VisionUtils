@@ -8,37 +8,54 @@ namespace internal {
 
 template <typename Derived>
 __host__ __device__
-
 inline typename Eigen::internal::traits<Derived>::Scalar GenericNorm(const Eigen::MatrixBase <Derived> & val) {
     return val.norm();
 }
 
 __host__ __device__
-
 inline float GenericNorm(const float & val) {
     return fabsf(val);
 }
 
 __host__ __device__
-
 inline double GenericNorm(const double & val) {
     return fabs(val);
 }
 
+template <typename Derived>
 __host__ __device__
+inline typename Eigen::internal::traits<Derived>::Scalar GenericSquaredNorm(const Eigen::MatrixBase<Derived> & val) {
+    return val.squaredNorm();
+}
 
+__host__ __device__
+inline float GenericSquaredNorm(const float & val) {
+    return val * val;
+}
+
+__host__ __device__
+inline double GenericeSquaredNorm(const double & val) {
+    return val * val;
+}
+
+__host__ __device__
 inline float GenericSqrt(const float & val) {
     return sqrtf(val);
 }
 
 __host__ __device__
-
 inline double GenericSqrt(const double & val) {
     return sqrt(val);
 }
 
 } // namespace internal
 
+
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//
+//                                          Residual Functors
+//
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 template <typename Scalar, int ResidualDim, int ModelDim>
 struct ResidualFunctorL2 {
 
@@ -101,35 +118,9 @@ struct ResidualFunctorHuber {
     ResidualFunctorHuber(const Scalar alpha) : alpha_(alpha) { }
 
     __attribute__((always_inline)) __host__ __device__
-    Scalar operator()(const JacobianAndResidual<Scalar,ResidualDim,ModelDim> & jacobianAndResidual) const {
+    Scalar operator()(const JacobianAndResidual<Scalar, ResidualDim, ModelDim> & jacobianAndResidual) const {
 
-        const Scalar norm = jacobianAndResidual.r.norm();
-
-        if (norm < alpha_) {
-
-            return Scalar(0.5) * norm * norm;
-
-        } else {
-
-            return alpha_ * (norm - Scalar(0.5) * alpha_);
-
-        }
-
-    }
-
-    Scalar alpha_;
-
-};
-
-template <typename Scalar, int ModelDim>
-struct ResidualFunctorHuber<Scalar,1,ModelDim> {
-
-    ResidualFunctorHuber(const Scalar alpha) : alpha_(alpha) { }
-
-    __attribute__((always_inline)) __host__ __device__
-    Scalar operator()(const JacobianAndResidual<Scalar,1,ModelDim> & jacobianAndResidual) const {
-
-        const Scalar norm = fabsf(jacobianAndResidual.r);
+        const Scalar norm = GenericNorm(jacobianAndResidual.r); //jacobianAndResidual.r.norm();
 
         if (norm < alpha_) {
 
@@ -201,6 +192,42 @@ struct WeightedResidualFunctorHuber<Scalar, 1, ModelDim, Scalar> {
 
 };
 
+template <typename Scalar, int ResidualDim, int ModelDim>
+struct ResidualFunctorTukey {
+
+    ResidualFunctorTukey(const Scalar k) : kSquared_(k * k) { }
+
+    __attribute__((always_inline)) __host__ __device__
+    Scalar operator()(const JacobianAndResidual<Scalar, ResidualDim, ModelDim> & jacobianAndResidual) const {
+
+        const Scalar squaredNormOverKSquared = internal::GenericeSquaredNorm(jacobianAndResidual.r) / kSquared_;
+
+        if (squaredNormOverKSquared < Scalar(1)) {
+
+            const Scalar oneMinusSquaredNormOverKSquared = Scalar(1) - squaredNormOverKSquared;
+
+            return kSquared_ / Scalar(6) * (Scalar(1) - oneMinusSquaredNormOverKSquared * oneMinusSquaredNormOverKSquared * oneMinusSquaredNormOverKSquared);
+
+        } else {
+
+            kSquared_ / Scalar(6);
+
+        }
+
+    }
+
+    Scalar kSquared_;
+
+};
+
+
+
+
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//
+//                                          System Creators
+//
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 template <typename Scalar, int ResidualDim, int ModelDim>
 struct LinearSystemCreationFunctorL2 {
 
@@ -286,7 +313,7 @@ struct WeightedLinearSystemCreationFunctorHuber {
     WeightedLinearSystemCreationFunctorHuber(const Scalar alpha, const WeightType & weight) : alpha_(alpha), weight_(weight) { }
 
     __attribute__((always_inline)) __host__ __device__
-    LinearSystem<Scalar,ModelDim> operator()(const JacobianAndResidual<Scalar,ResidualDim,ModelDim> & jacobianAndResidual) const {
+    LinearSystem<Scalar, ModelDim> operator()(const JacobianAndResidual<Scalar, ResidualDim, ModelDim> & jacobianAndResidual) const {
 
         const Scalar normSquared = jacobianAndResidual.r.transpose() * weight_ * jacobianAndResidual.r;
 
@@ -339,5 +366,37 @@ struct WeightedLinearSystemCreationFunctorHuber<Scalar, 1, ModelDim, Scalar> {
     Scalar weight_;
 
 };
+
+template <typename Scalar, int ResidualDim, int ModelDim>
+struct LinearSystemCreationFunctorTukey {
+
+    LinearSystemCreationFunctorTukey(const Scalar k) : oneOverKSquared_(Scalar(1) / (k * k)) { }
+
+    __attribute__((always_inline)) __host__ __device__
+    LinearSystem<Scalar, ModelDim> operator()(const JacobianAndResidual<Scalar, ResidualDim, ModelDim> & jacobianAndResidual) const {
+
+        const Scalar normSquaredOverKSquared = internal::GenericSquaredNorm(jacobianAndResidual.r) * oneOverKSquared_;
+
+        if (normSquaredOverKSquared < Scalar(1)) {
+
+            const Scalar oneMinusNormSquaredOverKSquared = Scalar(1) - normSquaredOverKSquared;
+
+            const Scalar reweighting = oneMinusNormSquaredOverKSquared * oneMinusNormSquaredOverKSquared;
+
+            return LinearSystem<Scalar,ModelDim>{ vu::operators::operator*(reweighting, internal::JTJInitializer<Scalar,ResidualDim,ModelDim>::UpperTriangularJTJ(jacobianAndResidual.J)),
+                                                  reweighting * jacobianAndResidual.J.transpose() * jacobianAndResidual.r };
+
+        } else {
+
+            return LinearSystem<Scalar, ModelDim>::Zero();
+
+        }
+
+    }
+
+    Scalar oneOverKSquared_;
+
+};
+
 
 } // namespace vu
