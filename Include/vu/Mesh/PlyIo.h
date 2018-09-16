@@ -12,32 +12,32 @@
 
 namespace vu {
 
-void WritePly(const NDT::Vector<Vec3<float> > & vertices,
-              const NDT::Vector<Vec3<float> > & normals,
+void WritePly(const NDT::ConstVector<Vec3<float> > & vertices,
+              const NDT::ConstVector<Vec3<float> > & normals,
               const std::string filename);
 
-void WritePly(const NDT::Vector<Vec3<float> > & vertices,
-              const NDT::Vector<Vec3<float> > & normals,
-              const NDT::Vector<Vec3<int> > & faces,
+void WritePly(const NDT::ConstVector<Vec3<float> > & vertices,
+              const NDT::ConstVector<Vec3<float> > & normals,
+              const NDT::ConstVector<Vec3<int> > & faces,
               const std::string filename);
 
-void WritePly(const NDT::Vector<Vec3<float> > & vertices,
-              const NDT::Vector<Vec3<float> > & normals,
-              const NDT::Vector<Vec3<unsigned char> > & colors,
-              const NDT::Vector<Vec3<int> > & faces,
+void WritePly(const NDT::ConstVector<Vec3<float> > & vertices,
+              const NDT::ConstVector<Vec3<float> > & normals,
+              const NDT::ConstVector<Vec3<unsigned char> > & colors,
+              const NDT::ConstVector<Vec3<int> > & faces,
               const std::string filename);
 
-void WritePly(const NDT::Vector<Vec3<float> > & vertices,
-              const NDT::Vector<Vec3<int> > & faces,
+void WritePly(const NDT::ConstVector<Vec3<float> > & vertices,
+              const NDT::ConstVector<Vec3<int> > & faces,
               const std::string filename);
 
-void WritePly(const NDT::Vector<Vec3<float> > & vertices,
-              const NDT::Vector<Vec3<unsigned char> > & colors,
+void WritePly(const NDT::ConstVector<Vec3<float> > & vertices,
+              const NDT::ConstVector<Vec3<unsigned char> > & colors,
               const std::string filename);
 
-void WritePly(const NDT::Vector<Vec3<float> > & vertices,
-              const NDT::Vector<Vec3<unsigned char> > & colors,
-              const NDT::Vector<Vec3<int> > & faces,
+void WritePly(const NDT::ConstVector<Vec3<float> > & vertices,
+              const NDT::ConstVector<Vec3<unsigned char> > & colors,
+              const NDT::ConstVector<Vec3<int> > & faces,
               const std::string filename);
 
 void ReadPly(NDT::ManagedVector<Vec3<float> > & vertices,
