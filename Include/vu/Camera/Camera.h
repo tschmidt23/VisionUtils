@@ -54,11 +54,19 @@ public:
 
     Camera(const int width, const int height,
            const ModelT<T> & model)
-        : CameraBase<T>(width,height), model_(model) { }
+        : CameraBase<T>(width, height), model_(model) { }
+
+    Camera<ModelT, T> Resized(const T scaleFactor) const {
+
+        ModelT<T> resizedModel(model_.ResizedParams(scaleFactor));
+
+        return Camera<ModelT, T>(std::round(scaleFactor * this->Width()), std::round(scaleFactor * this->Height()), resizedModel);
+
+    }
 
     template <typename U>
-    Camera<ModelT,U> Cast() const {
-        return Camera<ModelT,U>(this->width_, this->height_, model_.Cast<U>());
+    Camera<ModelT, U> Cast() const {
+        return Camera<ModelT, U>(this->width_, this->height_, model_.Cast<U>());
     }
 
     inline const T * Params() const override {
@@ -73,15 +81,15 @@ public:
         return model_.ModelName();
     }
 
-    inline Eigen::Matrix<T, 2, 1> Project(const Eigen::Matrix<T,3,1> point3d) const override {
+    inline Eigen::Matrix<T, 2, 1> Project(const Eigen::Matrix<T, 3, 1> point3d) const override {
         return model_.Project(point3d);
     }
 
-    inline Eigen::Matrix<T, 3, 1> Unproject(const Eigen::Matrix<T,2,1> point2d, const T depth) const override {
+    inline Eigen::Matrix<T, 3, 1> Unproject(const Eigen::Matrix<T, 2, 1> point2d, const T depth) const override {
         return model_.Unproject(point2d, depth);
     }
 
-    inline Eigen::Matrix<T, 2, 3> ProjectionDerivative(const Eigen::Matrix<T,3,1> point3d) const override {
+    inline Eigen::Matrix<T, 2, 3> ProjectionDerivative(const Eigen::Matrix<T, 3, 1> point3d) const override {
         return model_.ProjectionDerivative(point3d);
     };
 
@@ -94,8 +102,11 @@ public:
     inline const ModelT<T> & Model() const { return model_; }
 
 private:
+
     ModelT<T> model_;
+
 };
+
 
 
 } // namespace vu

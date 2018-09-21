@@ -8,6 +8,8 @@
 
 #include <Eigen/Core>
 
+#include <vu/EigenHelpers.h>
+
 #include <cuda_runtime.h>
 
 namespace vu {
@@ -41,14 +43,28 @@ public:
     }
 
     template <typename T2>
-    CameraModel(const CameraModel<ModelT,T2> & other) {
+    CameraModel(const CameraModel<ModelT, T2> & other) {
         for (unsigned int i = 0; i < NumParams(); ++i) {
             params_[i] = Scalar(other.Params()[i]);
         }
     }
 
-    CameraModel(const Eigen::Matrix<Scalar,internal::CameraModelTraits<ModelT>::NumParams,1,Eigen::DontAlign> & params)
+    CameraModel(const Eigen::Matrix<Scalar, internal::CameraModelTraits<ModelT>::NumParams, 1, Eigen::DontAlign> & params)
         : params_(params) { }
+
+    Eigen::Matrix<Scalar, internal::CameraModelTraits<ModelT>::NumParams, 1, Eigen::DontAlign> ResizedParams(const Scalar scaleFactor) const {
+
+        Eigen::Matrix<Scalar, internal::CameraModelTraits<ModelT>::NumParams, 1, Eigen::DontAlign> newParams = params_;
+
+        // adjust focal length
+        newParams.template head<2>() *= scaleFactor;
+
+        // adjust principal point
+        newParams.template segment<2>(2) = scaleFactor * (newParams.template segment<2>(2) + Vec2<Scalar>(0.5, 0.5)) - Vec2<Scalar>(0.5, 0.5);
+
+        return newParams;
+
+    }
 
     template <typename T2>
     inline ModelT<T2> Cast() const {
@@ -65,25 +81,25 @@ public:
         return params_.data();
     }
 
-    inline __host__ __device__ Eigen::Matrix<Scalar,2,1> Project(const Eigen::Matrix<Scalar,3,1> point3d) const {
+    inline __host__ __device__ Eigen::Matrix<Scalar, 2, 1> Project(const Eigen::Matrix<Scalar, 3, 1> point3d) const {
         return static_cast<const ModelT<Scalar> *>(this)->Project(point3d);
     }
 
-    inline __host__ __device__ Eigen::Matrix<Scalar,3,1> Unproject(const Eigen::Matrix<Scalar,2,1> point2d, const Scalar depth) const {
+    inline __host__ __device__ Eigen::Matrix<Scalar, 3, 1> Unproject(const Eigen::Matrix<Scalar, 2, 1> point2d, const Scalar depth) const {
         return static_cast<const ModelT<Scalar> *>(this)->Unproject(point2d,depth);
     }
 
-    inline __host__ __device__ Eigen::Matrix<Scalar,2,1> Dehomogenize(const Eigen::Matrix<Scalar,3,1> point3d) const {
+    inline __host__ __device__ Eigen::Matrix<Scalar, 2, 1> Dehomogenize(const Eigen::Matrix<Scalar, 3, 1> point3d) const {
 //        return point3d(2) > Scalar(0) ? Eigen::Matrix<Scalar,2,1>(point3d(0)/point3d(2),
 //                                                                  point3d(1)/point3d(2)) :
 //            Eigen::Matrix<Scalar,2,1>::Zero();
-        return Eigen::Matrix<Scalar,2,1>(point3d(0)/point3d(2),
-                                         point3d(1)/point3d(2));
+        return Eigen::Matrix<Scalar, 2, 1>(point3d(0) / point3d(2),
+                                           point3d(1) / point3d(2));
     }
 
 protected:
 
-    inline __host__ __device__ Eigen::Matrix<Scalar,2,3,Eigen::DontAlign> DehomogenizeDerivative(const Eigen::Matrix<Scalar,3,1,Eigen::DontAlign> & point3d) const {
+    inline __host__ __device__ Eigen::Matrix<Scalar, 2, 3, Eigen::DontAlign> DehomogenizeDerivative(const Eigen::Matrix<Scalar, 3, 1, Eigen::DontAlign> & point3d) const {
 
         const Scalar oneOverZ = Scalar(1) / point3d(2);
 
@@ -97,22 +113,22 @@ protected:
 
     }
 
-    inline __host__ __device__ Eigen::Matrix<Scalar,2,1> ApplyFocalLengthAndPrincipalPoint(const Eigen::Matrix<Scalar,2,1> dehomogPoint,
-                                                                  const Eigen::Matrix<Scalar,2,1> focalLength,
-                                                                  const Eigen::Matrix<Scalar,2,1> principalPoint) const {
-        return Eigen::Matrix<Scalar,2,1>(dehomogPoint(0)*focalLength(0),
-                                    dehomogPoint(1)*focalLength(1)) + principalPoint;
+    inline __host__ __device__ Eigen::Matrix<Scalar, 2, 1> ApplyFocalLengthAndPrincipalPoint(const Eigen::Matrix<Scalar, 2, 1> dehomogPoint,
+                                                                  const Eigen::Matrix<Scalar, 2, 1> focalLength,
+                                                                  const Eigen::Matrix<Scalar, 2, 1> principalPoint) const {
+        return Eigen::Matrix<Scalar, 2, 1>(dehomogPoint(0) * focalLength(0),
+                                           dehomogPoint(1) * focalLength(1)) + principalPoint;
     }
 
-    inline __host__ __device__ Eigen::Matrix<Scalar,2,1> UnapplyFocalLengthAndPrincipalPoint(const Eigen::Matrix<Scalar,2,1> point2d,
-                                                                    const Eigen::Matrix<Scalar,2,1> focalLength,
-                                                                    const Eigen::Matrix<Scalar,2,1> principalPoint) const {
-        const Eigen::Matrix<Scalar,2,1> centered = point2d - principalPoint;
-        return Eigen::Matrix<Scalar,2,1>(centered(0)/focalLength(0),
-                                         centered(1)/focalLength(1));
+    inline __host__ __device__ Eigen::Matrix<Scalar, 2, 1> UnapplyFocalLengthAndPrincipalPoint(const Eigen::Matrix<Scalar, 2, 1> point2d,
+                                                                    const Eigen::Matrix<Scalar, 2, 1> focalLength,
+                                                                    const Eigen::Matrix<Scalar, 2, 1> principalPoint) const {
+        const Eigen::Matrix<Scalar, 2, 1> centered = point2d - principalPoint;
+        return Eigen::Matrix<Scalar, 2, 1>(centered(0) / focalLength(0),
+                                           centered(1) / focalLength(1));
     }
 
-    Eigen::Matrix<Scalar,internal::CameraModelTraits<ModelT>::NumParams,1,Eigen::DontAlign> params_;
+    Eigen::Matrix<Scalar, internal::CameraModelTraits<ModelT>::NumParams, 1, Eigen::DontAlign> params_;
 
 };
 
