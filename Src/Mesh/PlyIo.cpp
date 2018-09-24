@@ -31,7 +31,7 @@ void WritePly(const NDT::ConstVector<Vec3<float> > & vertices,
     for (int i = 0; i < vertices.Count(); ++i) {
         const Vec3<float> & v = vertices(i);
         const Vec3<float> & n = normals(i);
-        stream << v(0) << " " << v(1) << " " << v(2) << " " << -n(0) << " " << -n(1) << " " << -n(2) << std::endl;
+        stream << v(0) << " " << v(1) << " " << v(2) << " " << n(0) << " " << n(1) << " " << n(2) << std::endl;
     }
 
 }
@@ -58,7 +58,7 @@ void WritePly(const NDT::ConstVector<Vec3<float> > & vertices,
     for (int i = 0; i < vertices.Count(); ++i) {
         const Vec3<float> & v = vertices(i);
         const Vec3<float> & n = normals(i);
-        stream << v(0) << " " << v(1) << " " << v(2) << " " << -n(0) << " " << -n(1) << " " << -n(2) << std::endl;
+        stream << v(0) << " " << v(1) << " " << v(2) << " " << n(0) << " " << n(1) << " " << n(2) << std::endl;
     }
     for (int i = 0; i < faces.Count(); ++i) {
         const Vec3<int> & f = faces(i);
@@ -172,7 +172,7 @@ void WritePly(const NDT::ConstVector<Vec3<float> > & vertices,
         const Vec3<float> & n = normals(i);
         const Vec3<unsigned char> & c = colors(i);
         stream << v(0) << " " << v(1) << " " << v(2) << " " <<
-               -n(0) << " " << -n(1) << " " << -n(2) << " " <<
+               n(0) << " " << n(1) << " " << n(2) << " " <<
                (int)c(0) << " " << (int)c(1) << " " << (int)c(2) << std::endl;
     }
     for (int i = 0; i < faces.Count(); ++i) {
