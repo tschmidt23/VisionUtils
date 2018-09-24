@@ -41,6 +41,8 @@ void WritePly(const NDT::ConstVector<Vec3<float> > & vertices,
               const NDT::ConstVector<Vec3<int> > & faces,
               const std::string filename) {
 
+    std::cout << "not flipping normals" << std::endl;
+
     std::ofstream stream(filename);
     stream << "ply" << std::endl;
     stream << "format ascii 1.0" << std::endl;
