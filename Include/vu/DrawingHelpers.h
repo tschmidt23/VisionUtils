@@ -48,6 +48,13 @@ void DrawPoints(const NDT::Vector<Vec<D, float> > & points,
                 const NDT::Vector<Vec3<unsigned char> > & colors,
                 const GLuint mode = GL_POINTS);
 
+template <int D>
+void DrawPoints(const NDT::Vector<Vec<D, float> > & points,
+                const NDT::Vector<Vec3<unsigned char> > & colors,
+                const NDT::Vector<int> & indices,
+                const GLuint mode = GL_POINTS);
+
+// TODO: I think this can be superceded by the above
 void DrawPoints(const NDT::Vector<Vec3<float> > & points,
                 const NDT::Vector<Vec3<unsigned char> > & colors,
                 const NDT::Vector<Vec3<int> > & faces);
