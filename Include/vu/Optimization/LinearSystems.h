@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Eigen/Core>
+
 #include <vu/CudaHelpers.h>
 
 namespace vu {
