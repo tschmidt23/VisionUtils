@@ -126,6 +126,26 @@ void DrawPoints(const NDT::Vector<Vec3<float> > & points,
 
 }
 
+void DrawPoints(const NDT::Vector<Vec3<float> > & points,
+                const NDT::Vector<Vec3<float> > & normals,
+                const NDT::Vector<Vec3<unsigned char> > & colors,
+                const NDT::Vector<int> & indices,
+                const GLuint mode) {
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(3, GL_FLOAT, 0, points.Data());
+    glEnableClientState(GL_NORMAL_ARRAY);
+    glNormalPointer(GL_FLOAT, 0, normals.Data());
+    glEnableClientState(GL_COLOR_ARRAY);
+    glColorPointer(3, GL_UNSIGNED_BYTE, 0, colors.Data());
+    glDrawElements(mode, indices.Count(), GL_UNSIGNED_INT, indices.Data());
+    glDisableClientState(GL_COLOR_ARRAY);
+    glDisableClientState(GL_NORMAL_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
+
+
+}
+
 
 template <int D>
 void DrawPoints(const NDT::Vector<Vec<D, float> > & points,
