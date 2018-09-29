@@ -126,10 +126,10 @@ void DrawPoints(const NDT::Vector<Vec3<float> > & points,
 
 }
 
-void DrawPoints(const NDT::Vector<Vec3<float> > & points,
-                const NDT::Vector<Vec3<float> > & normals,
-                const NDT::Vector<Vec3<unsigned char> > & colors,
-                const NDT::Vector<int> & indices,
+void DrawPoints(const NDT::ConstVector<Vec3<float> > & points,
+                const NDT::ConstVector<Vec3<float> > & normals,
+                const NDT::ConstVector<Vec3<unsigned char> > & colors,
+                const NDT::ConstVector<int> & indices,
                 const GLuint mode) {
 
     glEnableClientState(GL_VERTEX_ARRAY);
