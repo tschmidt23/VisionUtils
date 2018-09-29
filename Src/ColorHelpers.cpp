@@ -29,9 +29,9 @@ std::vector<Vec3<unsigned char> > GetColorPalette(const int K) {
 
         std::vector<Color> palette(K);
         for (int k = 0; k < K; ++k) {
-            palette[k] = { static_cast<unsigned char>(rand() % 255),
-                           static_cast<unsigned char>(rand() % 255),
-                           static_cast<unsigned char>(rand() % 255) };
+            palette[k] = { static_cast<unsigned char>(128 + rand() % 128),
+                           static_cast<unsigned char>(128 + rand() % 128),
+                           static_cast<unsigned char>(128 + rand() % 128) };
         }
 
         return palette;
