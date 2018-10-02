@@ -111,6 +111,87 @@ private:
 using KdIndexedPointCloudTree = nanoflann::KDTreeSingleIndexAdaptor<nanoflann::L2_Simple_Adaptor<float, KdIndexedPointCloud>, KdIndexedPointCloud, 3, int>;
 
 
+
+
+template <int D>
+struct KdListOfVertexLists {
+public:
+
+    KdListOfVertexLists(const std::vector<NDT::Vector<Vec<D, float> > > & points) {
+
+        for (auto el : points) {
+            points_.push_back(el);
+        }
+
+        count_ = std::accumulate(points_.cbegin(), points_.cend(), 0,
+                                 [](const int soFar, auto el) { return soFar + el.Count(); });
+
+    }
+
+    KdListOfVertexLists(const std::vector<NDT::ConstVector<Vec<D, float> > > & points)
+            : points_(points) {
+
+        count_ = std::accumulate(points_.cbegin(), points_.cend(), 0,
+                                 [](const int soFar, auto el) { return soFar + el.Count(); });
+
+    }
+
+    // Must return the number of data points
+    inline size_t kdtree_get_point_count() const {
+        return count_;
+    }
+
+    // Returns the distance between the vector "p1[0:size-1]" and the data point with index "idx_p2" stored in the class:
+    inline float kdtree_distance(const float * p1, const size_t idx_p2,size_t /*size*/) const {
+
+        int n = 0;
+        size_t localIndex = idx_p2;
+
+        while (localIndex >= points_[n].Count()) {
+            localIndex -= points_[n].Count();
+            ++n;
+        }
+
+        Eigen::Map<const Vec<D, float> > p(p1);
+
+        return (p - points_[n](localIndex)).squaredNorm();
+
+    }
+
+    // Returns the dim'th component of the idx'th point in the class:
+    // Since this is inlined and the "dim" argument is typically an immediate value, the
+    //  "if/else's" are actually solved at compile time.
+    inline float kdtree_get_pt(const size_t idx, int dim) const {
+
+        int n = 0;
+        size_t localIndex = idx;
+
+        while (localIndex >= points_[n].Count()) {
+            localIndex -= points_[n].Count();
+            ++n;
+        }
+
+        return points_[n](localIndex)(dim);
+
+    }
+
+    // Optional bounding-box computation: return false to default to a standard bbox computation loop.
+    //   Return true if the BBOX was already computed by the class and returned in "bb" so it can be avoided to redo it again.
+    //   Look at bb.size() to find out the expected dimensionality (e.g. 2 or 3 for point clouds)
+    template <class BBOX>
+    bool kdtree_get_bbox(BBOX & /*bb*/) const { return false; }
+
+private:
+
+    int count_;
+    std::vector<NDT::ConstVector<Vec<D, float> > > points_;
+
+};
+
+template <int D>
+using KdListOfVertexListsTree = nanoflann::KDTreeSingleIndexAdaptor<nanoflann::L2_Simple_Adaptor<float, KdListOfVertexLists<D> >, KdListOfVertexLists<D>, D, int>;
+
+
 //struct KdVertMap {
 //public:
 //
