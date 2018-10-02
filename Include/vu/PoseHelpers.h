@@ -29,4 +29,17 @@ SophusTranslation(const Eigen::MatrixBase<Derived> & translation) {
 
 }
 
+template <typename Derived>
+inline
+typename std::enable_if<Eigen::internal::traits<Derived>::RowsAtCompileTime == 3 &&
+                        Eigen::internal::traits<Derived>::ColsAtCompileTime == 1,
+        Sophus::SE3<typename Eigen::internal::traits<Derived>::Scalar> >::type
+SophusRotation(const Eigen::MatrixBase<Derived> & rotation) {
+
+    using Scalar = typename Eigen::internal::traits<Derived>::Scalar;
+
+    return Sophus::SE3<Scalar>(Sophus::SO3<Scalar>::exp(rotation), Eigen::Matrix<Scalar, 3, 1>::Zero());
+
+}
+
 } // namespace vu
