@@ -124,7 +124,7 @@ public:
         }
 
         count_ = std::accumulate(points_.cbegin(), points_.cend(), 0,
-                                 [](const int soFar, auto el) { return soFar + el.Count(); });
+                                 [](const int soFar, const NDT::ConstVector<Vec<D, float> > & el) { return soFar + el.Count(); });
 
     }
 
@@ -132,7 +132,7 @@ public:
             : points_(points) {
 
         count_ = std::accumulate(points_.cbegin(), points_.cend(), 0,
-                                 [](const int soFar, auto el) { return soFar + el.Count(); });
+                                 [](const int soFar, const NDT::ConstVector<Vec<D, float> > & el) { return soFar + el.Count(); });
 
     }
 
