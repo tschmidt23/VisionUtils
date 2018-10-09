@@ -120,7 +120,7 @@ struct ResidualFunctorHuber {
     __attribute__((always_inline)) __host__ __device__
     Scalar operator()(const JacobianAndResidual<Scalar, ResidualDim, ModelDim> & jacobianAndResidual) const {
 
-        const Scalar norm = GenericNorm(jacobianAndResidual.r); //jacobianAndResidual.r.norm();
+        const Scalar norm = internal::GenericNorm(jacobianAndResidual.r); //jacobianAndResidual.r.norm();
 
         if (norm < alpha_) {
 
