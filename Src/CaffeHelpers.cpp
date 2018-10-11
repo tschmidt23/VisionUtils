@@ -35,7 +35,7 @@ void CaffeSwizzle(const NDT::ConstVolume<unsigned char> & source,
 
 int GetLatestSnapshot(const std::string & experimentDir) {
 
-    int latestSnap = 0;
+    int latestSnap = -1;
     std::vector<std::string> experimentDirContents = GetDirectoryContents(experimentDir);
     std::regex snapRegex("snap_iter_(\\d+).caffemodel");
     for (std::string & content : experimentDirContents) {
