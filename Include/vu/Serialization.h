@@ -142,6 +142,28 @@ struct Serializer<std::string> {
 
 };
 
+
+template <typename T, typename U>
+struct Serializer<std::pair<T, U> > {
+
+    static void Serialize(std::ostream & stream,
+                          const std::pair<T, U> & p) {
+
+        Serializer<T>::Serialize(stream, p.first);
+        Serializer<U>::Serialize(stream, p.second);
+
+    }
+
+    static void Deserialize(std::istream & stream,
+                            std::pair<T, U> & p) {
+
+        Serializer<T>::Deserialize(stream, p.first);
+        Serializer<U>::Deserialize(stream, p.second);
+
+    }
+
+};
+
 template <typename T>
 struct Serializer<std::set<T> > {
 
