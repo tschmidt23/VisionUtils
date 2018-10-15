@@ -379,6 +379,33 @@ public:
 
 };
 
+int ReadPlyVertexCount(const std::string filename) {
+
+    std::ifstream stream(filename);
+
+    std::vector<std::string> elementTypeStrings;
+    std::vector<int> elementCounts;
+    std::vector<std::vector<std::string> > elementPropertyTypeStrings;
+    std::vector<std::vector<std::string> > elementPropertyNames;
+
+    ParsePlyHeader(stream, elementTypeStrings, elementCounts, elementPropertyTypeStrings, elementPropertyNames);
+
+    for (int i = 0; i < elementTypeStrings.size(); ++i) {
+
+        const std::string & s = elementTypeStrings[i];
+
+        if (s == "vertex") {
+
+            return elementCounts[i];
+
+        }
+
+    }
+
+    return -1;
+
+}
+
 void ReadPly(NDT::ManagedVector<Vec3<float> > * vertices,
              NDT::ManagedVector<Vec3<float> > * normals,
              NDT::ManagedVector<Vec3<unsigned char> > * colors,
