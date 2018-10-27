@@ -6,6 +6,8 @@
 
 #include <NDT/Tensor.h>
 
+#include <vu/EigenHelpers.h>
+
 namespace vu {
 
 static inline std::mt19937 & Generator() {
