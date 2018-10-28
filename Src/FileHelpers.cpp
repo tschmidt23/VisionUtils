@@ -33,6 +33,8 @@ std::vector<std::string> GetDirectoryContents(const std::string & dirName) {
 
     }
 
+    closedir(dir);
+
     return contents;
 
 }
