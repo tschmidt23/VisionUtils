@@ -184,40 +184,36 @@ ElementwiseInverse(const Eigen::MatrixBase<Derived> & v) {
 template <typename Scalar, int D>
 struct VecCompare {
 
-    typedef Eigen::Matrix<Scalar,D,1> Vec;
-
     CUDA_HD_PREFIX
-    static inline bool Less(const Vec & a, const Vec & b) {
+    static inline bool Less(const Vec<D, Scalar> & a, const Vec<D, Scalar> & b) {
         if (a(0) < b(0)) return true;
         if (a(0) > b(0)) return false;
 
-        return VecCompare<Scalar,D-1>::Less(a.template tail<D-1>(),b.template tail<D-1>());
+        return VecCompare<Scalar,D-1>::Less(a.template tail<D-1>(), b.template tail<D-1>());
     }
 
     CUDA_HD_PREFIX
-    static inline bool Equal(const Vec & a, const Vec & b) {
+    static inline bool Equal(const Vec<D, Scalar> & a, const Vec<D, Scalar> & b) {
 
         if (a(0) != b(0)) return false;
 
-        return VecCompare<Scalar,D-1>::Equal(a.template tail<D-1>(),b.template tail<D-1>());
+        return VecCompare<Scalar, D-1>::Equal(a.template tail<D-1>(), b.template tail<D-1>());
     }
 
 };
 
 template <typename Scalar>
-struct VecCompare<Scalar,1> {
-
-    typedef Eigen::Matrix<Scalar,1,1> Vec;
+struct VecCompare<Scalar, 1> {
 
     CUDA_HD_PREFIX
-    static inline bool Less(const Vec & a, const Vec & b) {
+    static inline bool Less(const Vec<1, Scalar> & a, const Vec<1, Scalar> & b) {
 
         return a(0) < b(0);
 
     }
 
     CUDA_HD_PREFIX
-    static inline bool Equal(const Vec & a, const Vec & b) {
+    static inline bool Equal(const Vec<1, Scalar> & a, const Vec<1, Scalar> & b) {
 
         return a(0) == b(0);
 
@@ -229,12 +225,10 @@ struct VecCompare<Scalar,1> {
 template <typename Scalar, int D>
 struct VecLess {
 
-    typedef Eigen::Matrix<Scalar,D,1> Vec;
-
     CUDA_HD_PREFIX
-    inline bool operator()(const Vec & a, const Vec & b) const {
+    inline bool operator()(const Vec<D, Scalar> & a, const Vec<D, Scalar> & b) const {
 
-        return VecCompare<Scalar,D>::Less(a,b);
+        return VecCompare<Scalar, D>::Less(a, b);
 
     }
 
@@ -243,12 +237,10 @@ struct VecLess {
 template <typename Scalar, int D>
 struct VecEqual {
 
-    typedef Eigen::Matrix<Scalar,D,1> Vec;
-
     CUDA_HD_PREFIX
-    inline bool operator()(const Vec & a, const Vec & b) const {
+    inline bool operator()(const Vec<D, Scalar> & a, const Vec<D, Scalar> & b) const {
 
-        return VecCompare<Scalar,D>::Equal(a,b);
+        return VecCompare<Scalar, D>::Equal(a, b);
 
     }
 

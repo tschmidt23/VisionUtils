@@ -19,14 +19,15 @@
 
 namespace vu {
 
-void DrawPoints(const NDT::Image<Vec3<float> > & points, const GLuint mode = GL_POINTS);
+template <int VecD, int TensorD, typename T>
+void DrawPoints(const NDT::ConstTensor<TensorD, Vec<VecD, T> > & points, const GLuint mode = GL_POINTS);
 
 void DrawPoints(const NDT::Image<Vec3<float> > & points,
                 const NDT::Image<Vec3<float> > & normals,
                 const GLuint mode = GL_POINTS);
 
-template <int D>
-void DrawPoints(const NDT::Vector<Vec<D, float> > & points, const GLuint mode = GL_POINTS);
+//template <int D>
+//void DrawPoints(const NDT::Vector<Vec<D, float> > & points, const GLuint mode = GL_POINTS);
 
 void DrawPoints(const NDT::Vector<Vec3<float> > & points,
                 const NDT::Vector<int> & indices,

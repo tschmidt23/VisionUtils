@@ -9,6 +9,23 @@
 
 namespace vu {
 
+template <typename T>
+struct GlType;
+
+template <>
+struct GlType<float> {
+
+    static constexpr GLenum Type = GL_FLOAT;
+
+};
+
+template <>
+struct GlType<int> {
+
+    static constexpr GLenum Type = GL_INT;
+
+};
+
 template <typename Derived>
 struct DrawingTraits;
 
@@ -34,15 +51,24 @@ void ActivateViewportCoordinates(pangolin::View & view, const Eigen::AlignedBox2
 
 }
 
-
-void DrawPoints(const NDT::Image<Vec3<float> > & points, const GLuint mode) {
+template <int VecD, int TensorD, typename T>
+void DrawPoints(const NDT::ConstTensor<TensorD, Vec<VecD, T> > & points, const GLuint mode) {
 
     glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(3, GL_FLOAT, 0, points.Data());
+    glVertexPointer(VecD, GlType<T>::Type, 0, points.Data());
     glDrawArrays(mode, 0, points.Count());
     glDisableClientState(GL_VERTEX_ARRAY);
 
 }
+
+template void DrawPoints<2, 2, float>(const NDT::ConstImage<Vec2<float> > &, const GLuint);
+template void DrawPoints<3, 2, float>(const NDT::ConstImage<Vec3<float> > &, const GLuint);
+template void DrawPoints<2, 2, int>(const NDT::ConstImage<Vec2<int> > &, const GLuint);
+template void DrawPoints<3, 2, int>(const NDT::ConstImage<Vec3<int> > &, const GLuint);
+template void DrawPoints<2, 1, float>(const NDT::ConstVector<Vec2<float> > &, const GLuint);
+template void DrawPoints<3, 1, float>(const NDT::ConstVector<Vec3<float> > &, const GLuint);
+template void DrawPoints<2, 1, int>(const NDT::ConstVector<Vec2<int> > &, const GLuint);
+template void DrawPoints<3, 1, int>(const NDT::ConstVector<Vec3<int> > &, const GLuint);
 
 
 void DrawPoints(const NDT::Image<Vec3<float> > & points,
@@ -83,19 +109,19 @@ template void DrawPoints(const NDT::Image<Vec3<float> > &, const NDT::Image<Vec3
 
 template void DrawPoints(const NDT::Image<Vec4<float> > &, const NDT::Image<Vec3<unsigned char> > &, const GLuint);
 
-template <int D>
-void DrawPoints(const NDT::Vector<Vec<D, float> > & points, const GLuint mode) {
-
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(D, GL_FLOAT, 0, points.Data());
-    glDrawArrays(mode, 0, points.Count());
-    glDisableClientState(GL_VERTEX_ARRAY);
-
-}
-
-template void DrawPoints(const NDT::Vector<Vec2<float> > &, const GLuint);
-
-template void DrawPoints(const NDT::Vector<Vec3<float> > &, const GLuint);
+//template <int D>
+//void DrawPoints(const NDT::Vector<Vec<D, float> > & points, const GLuint mode) {
+//
+//    glEnableClientState(GL_VERTEX_ARRAY);
+//    glVertexPointer(D, GL_FLOAT, 0, points.Data());
+//    glDrawArrays(mode, 0, points.Count());
+//    glDisableClientState(GL_VERTEX_ARRAY);
+//
+//}
+//
+//template void DrawPoints(const NDT::Vector<Vec2<float> > &, const GLuint);
+//
+//template void DrawPoints(const NDT::Vector<Vec3<float> > &, const GLuint);
 
 
 void DrawPoints(const NDT::Vector<Vec3<float> > & points,
