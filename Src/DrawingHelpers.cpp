@@ -207,7 +207,7 @@ void DrawPoints(const NDT::Vector<Vec<D, float> > & points,
     glVertexPointer(D, GL_FLOAT, 0, points.Data());
     glEnableClientState(GL_COLOR_ARRAY);
     glColorPointer(3, GL_UNSIGNED_BYTE, 0, colors.Data());
-    glDrawElements(mode, indices.Length(), GL_INT, indices.Data());
+    glDrawElements(mode, indices.Count(), GL_UNSIGNED_INT, indices.Data());
     glDisableClientState(GL_COLOR_ARRAY);
     glDisableClientState(GL_VERTEX_ARRAY);
 
