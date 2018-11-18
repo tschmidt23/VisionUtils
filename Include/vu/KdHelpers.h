@@ -396,7 +396,7 @@ using KdFeatureMapTree = nanoflann::KDTreeSingleIndexAdaptor<nanoflann::L2_Simpl
 struct KdMatrix {
 public:
 
-    KdMatrix(const NDT::Tensor2f & matrix)
+    KdMatrix(const NDT::ConstTensor2f & matrix)
             : matrix_(matrix) { }
 
     // Must return the number of data points
