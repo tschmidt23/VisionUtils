@@ -16,10 +16,10 @@ template <int D>
 struct KdVertexList {
 public:
 
-    KdVertexList(const NDT::Vector<Vec<D, float> > & points)
+    KdVertexList(const NDT::ConstVector<Vec<D, float> > & points)
             : points_(points) { }
 
-    KdVertexList(const NDT::Image<Vec<D, float> > & points)
+    KdVertexList(const NDT::ConstImage<Vec<D, float> > & points)
             : points_(points.Count(), points.Data()) { }
 
     // Must return the number of data points
