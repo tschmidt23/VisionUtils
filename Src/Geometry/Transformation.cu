@@ -1,9 +1,13 @@
 #include <vu/Geometry/Transformation.h>
 
+#include <sophus/se3.hpp>
+
+#include <thrust/transform.h>
+
 namespace vu {
 
-template <typename Scalar, int D>
-void Transform(const Sophus::SE3<Scalar> & transform,
+template <typename TransformT, typename Scalar, int D>
+void Transform(const TransformT & transform,
                const NDT::ConstDeviceTensor<D, Vec3<Scalar> > & source,
                NDT::DeviceTensor<D, Vec3<Scalar> > & destination) {
 
@@ -15,11 +19,20 @@ void Transform(const Sophus::SE3<Scalar> & transform,
 
 }
 
-template void Transform<float, 1>(const Sophus::SE3f &, const NDT::ConstDeviceVector<Vec3<float> > &, NDT::DeviceVector<Vec3<float> > &);
-template void Transform<double, 1>(const Sophus::SE3d &, const NDT::ConstDeviceVector<Vec3<double> > &, NDT::DeviceVector<Vec3<double> > &);
+// for points
+template void Transform<Sophus::SE3f, float, 1>(const Sophus::SE3f &, const NDT::ConstDeviceVector<Vec3<float> > &, NDT::DeviceVector<Vec3<float> > &);
+template void Transform<Sophus::SE3d, double, 1>(const Sophus::SE3d &, const NDT::ConstDeviceVector<Vec3<double> > &, NDT::DeviceVector<Vec3<double> > &);
 
-template void Transform<float, 2>(const Sophus::SE3f &, const NDT::ConstDeviceImage<Vec3<float> > &, NDT::DeviceImage<Vec3<float> > &);
-template void Transform<double, 2>(const Sophus::SE3d &, const NDT::ConstDeviceImage<Vec3<double> > &, NDT::DeviceImage<Vec3<double> > &);
+template void Transform<Sophus::SE3f, float, 2>(const Sophus::SE3f &, const NDT::ConstDeviceImage<Vec3<float> > &, NDT::DeviceImage<Vec3<float> > &);
+template void Transform<Sophus::SE3d, double, 2>(const Sophus::SE3d &, const NDT::ConstDeviceImage<Vec3<double> > &, NDT::DeviceImage<Vec3<double> > &);
+
+
+// for vectors
+template void Transform<Sophus::SO3f, float, 1>(const Sophus::SO3f &, const NDT::ConstDeviceVector<Vec3<float> > &, NDT::DeviceVector<Vec3<float> > &);
+template void Transform<Sophus::SO3d, double, 1>(const Sophus::SO3d &, const NDT::ConstDeviceVector<Vec3<double> > &, NDT::DeviceVector<Vec3<double> > &);
+
+template void Transform<Sophus::SO3f, float, 2>(const Sophus::SO3f &, const NDT::ConstDeviceImage<Vec3<float> > &, NDT::DeviceImage<Vec3<float> > &);
+template void Transform<Sophus::SO3d, double, 2>(const Sophus::SO3d &, const NDT::ConstDeviceImage<Vec3<double> > &, NDT::DeviceImage<Vec3<double> > &);
 
 
 } // namespace vu
