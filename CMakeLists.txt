@@ -2,7 +2,8 @@ project("VisionUtils")
 cmake_minimum_required(VERSION 3.0)
 
 add_definitions(-std=c++11)
-#add_definitions(-DEIGEN_HAS_CUDA_FP16)
+
+set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS}; -std=c++11; --expt-relaxed-constexpr; -O3; --expt-extended-lambda; --verbose; --use_fast_math;")
 
 find_package(Caffe)
 find_package(CUDA REQUIRED)
@@ -14,7 +15,9 @@ file(GLOB VisionUtilsHeaders
 
 file(GLOB VisionUtilsSources
      "${PROJECT_SOURCE_DIR}/Src/*.cpp"
-	 "${PROJECT_SOURCE_DIR}/Src/*/*.cpp")
+	 "${PROJECT_SOURCE_DIR}/Src/*/*.cpp"
+	 "${PROJECT_SOURCE_DIR}/Src/*.cu"
+	 "${PROJECT_SOURCE_DIR}/Src/*/*.cu")
 
 set(IncludeDirs
     ${PROJECT_SOURCE_DIR}/Include

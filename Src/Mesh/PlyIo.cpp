@@ -147,6 +147,37 @@ void WritePly(const NDT::ConstVector<Vec3<float> > & vertices,
 
 }
 
+
+void WritePly(const NDT::ConstVector<Vec3<float> > & vertices,
+              const NDT::ConstVector<Vec3<float> > & normals,
+              const NDT::ConstVector<Vec3<unsigned char> > & colors,
+              const std::string filename) {
+
+    std::ofstream stream(filename);
+    stream << "ply" << std::endl;
+    stream << "format ascii 1.0" << std::endl;
+    stream << "element vertex " << vertices.Count() << std::endl;
+    stream << "property float x" << std::endl;
+    stream << "property float y" << std::endl;
+    stream << "property float z" << std::endl;
+    stream << "property float nx" << std::endl;
+    stream << "property float ny" << std::endl;
+    stream << "property float nz" << std::endl;
+    stream << "property uchar red" << std::endl;
+    stream << "property uchar green" << std::endl;
+    stream << "property uchar blue" << std::endl;
+    stream << "end_header" << std::endl;
+    for (int i = 0; i < vertices.Count(); ++i) {
+        const Vec3<float> & v = vertices(i);
+        const Vec3<float> & n = normals(i);
+        const Vec3<unsigned char> & c = colors(i);
+        stream << v(0) << " " << v(1) << " " << v(2) << " " <<
+               n(0) << " " << n(1) << " " << n(2) << " " <<
+               (int)c(0) << " " << (int)c(1) << " " << (int)c(2) << std::endl;
+    }
+
+}
+
 void WritePly(const NDT::ConstVector<Vec3<float> > & vertices,
               const NDT::ConstVector<Vec3<float> > & normals,
               const NDT::ConstVector<Vec3<unsigned char> > & colors,
