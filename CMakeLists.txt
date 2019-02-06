@@ -11,7 +11,8 @@ find_package(Eigen3 REQUIRED)
 find_package(Pangolin)
 
 file(GLOB VisionUtilsHeaders
-     "${PROJECT_SOURCE_DIR}/Include/*.h")
+     "${PROJECT_SOURCE_DIR}/Include/*.h"
+	 "${PROJECT_SOURCE_DIR}/Include/*/*.h")
 
 file(GLOB VisionUtilsSources
      "${PROJECT_SOURCE_DIR}/Src/*.cpp"
